@@ -1,0 +1,39 @@
+{
+  "name": "@deductly/property-tax-calculator",
+  "version": "1.0.0",
+  "description": "Property tax savings calculator microservice for the Property Tax Reduction app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "npx @google-cloud/functions-framework --target=handleRequest --port=8080",
+    "deploy": "bash scripts/deploy.sh",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "keywords": [
+    "property-tax",
+    "tax-calculator",
+    "gcp",
+    "cloud-functions"
+  ],
+  "author": "Deductly",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^7.0.0",
+    "@google-cloud/functions-framework": "^3.3.0",
+    "@google-cloud/secret-manager": "^5.0.0",
+    "apify-client": "^2.9.3",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "dotenv": "^17.2.3",
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  }
+}

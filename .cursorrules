@@ -1,0 +1,173 @@
+# Cursor Rules for GCP Microservices
+
+## GCP Resource Labeling
+
+**ALL Google Cloud resources MUST include the following label:**
+```
+app=deductly
+```
+
+**Additional required labels when creating/modifying GCP resources:**
+- `service` - The specific microservice name (e.g., `property-tax-calculator`, `zillow-scraper`)
+- `environment` - Deployment environment: `dev`, `staging`, or `prod`
+- `managed-by` - How the resource is managed: `gcloud`, `terraform`, `console`
+
+**Examples:**
+
+**Cloud Functions:**
+```bash
+gcloud functions deploy function-name \
+  --runtime nodejs20 \
+  --trigger-http \
+  --update-labels app=deductly,service=property-tax-calculator,environment=prod,managed-by=gcloud
+```
+
+**Firestore (applied at database level):**
+```bash
+gcloud firestore databases update \
+  --update-labels app=deductly,service=property-tax-calculator,environment=prod
+```
+
+**Cloud Storage Buckets:**
+```bash
+gcloud storage buckets update gs://bucket-name \
+  --update-labels=app=deductly,service=zillow-scraper,environment=prod,managed-by=gcloud
+```
+
+**Pub/Sub Topics:**
+```bash
+gcloud pubsub topics create topic-name \
+  --labels=app=deductly,service=notification-service,environment=prod
+```
+
+**Service Accounts:**
+```bash
+gcloud iam service-accounts create account-name \
+  --display-name="Service Account Name" \
+  --labels=app=deductly,service=property-tax-calculator
+```
+
+**Why this matters:**
+- **Cost tracking:** Filter billing by `app=deductly` to see total application costs
+- **Resource discovery:** Find all Deductly resources with `gcloud asset search-all-resources --query="labels.app=deductly"`
+- **Cleanup:** Easily identify and remove test/orphaned resources
+- **Multi-tenant:** Distinguish Deductly resources from other projects in shared GCP organizations
+
+**Verification:**
+Always verify labels after deployment:
+```bash
+# For Cloud Functions
+gcloud functions describe function-name --format="value(labels)"
+
+# For all resources in project
+gcloud asset search-all-resources --query="labels.app=deductly" --format="table(name,labels)"
+```
+
+## Documentation Philosophy
+
+Each microservice README is the source of truth. Any engineer or AI should understand the service completely without external context.
+
+## Auto-Update README When:
+
+- Adding/changing functions or business logic
+- Modifying API contracts (inputs/outputs)
+- Adding/removing GCP resources or dependencies
+- Changing environment variables or configuration
+- Updating authentication, authorization, or data schemas
+
+**Skip only for:** typos, formatting, refactoring without behavior changes
+
+## Required README Structure
+
+````markdown
+# [Service Name]
+
+## Purpose
+[What this service does and why it exists - 1-2 sentences]
+
+## Business Rules
+- Rule 1: [e.g., "401k cap: $23,000/year"]
+- Rule 2: [e.g., "SALT deduction limit: $10,000"]
+
+## How It Works
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+**Key Logic:**
+- **[Decision Point]:** When X, we do Y because Z
+
+## API
+
+**Endpoints:**
+```http
+POST /calculate
+Input: { userId: "123", taxYear: 2024 }
+Output: { taxableIncome: 450000, effectiveRate: 0.354 }
+Errors: 400 "userId required", 404 "user not found"
+```
+
+## GCP Resources
+- Cloud Function: `calculate-tax` - HTTP trigger, 512MB, 60s timeout
+- Firestore: `tax-returns` - stores parsed returns, indexed on userId+taxYear
+- Cloud Storage: `tax-uploads` - 7-year retention
+- Service Account: `tax-calc@project.iam` - needs datastore.user, logging.logWriter
+
+## Dependencies
+**Upstream:** [services this calls]
+**Downstream:** [services that call this]
+**External APIs:** [third-party integrations]
+
+## Environment Variables
+```bash
+TAX_API_KEY=xxx          # IRS tax rate API
+MAX_RETRIES=3            # Retry failed calculations
+```
+
+## Local Development
+```bash
+npm install
+npm run dev              # Runs on localhost:8080
+npm test
+```
+
+## Deployment
+```bash
+gcloud functions deploy calculate-tax \
+  --runtime nodejs20 \
+  --trigger-http \
+  --region us-central1 \
+  --set-env-vars TAX_API_KEY=$TAX_API_KEY
+```
+
+## Monitoring
+- Logs: Cloud Logging → `resource.labels.function_name="calculate-tax"`
+- Metrics: [Dashboard link]
+- Alerts: [Alert policy names]
+
+## Edge Cases
+- Over-contribution to 401k → Flag but don't auto-correct
+- [Other gotchas]
+````
+
+## Microservice-Specific Rules
+
+- **Service isolation:** Document how this service fails gracefully if dependencies are down
+- **Inter-service communication:** Document exact message/API contracts
+- **Data ownership:** Clarify what data this service owns vs. reads from others
+- **Versioning:** Document API version and breaking change policy
+
+## Quality Check
+
+Can a new engineer:
+- [ ] Understand what this service does?
+- [ ] Run it locally?
+- [ ] Know what it depends on?
+- [ ] Deploy it independently?
+- [ ] Debug it when it fails?
+
+If no to any → README is incomplete.
+
+
+
+
