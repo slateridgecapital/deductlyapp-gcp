@@ -37,17 +37,19 @@ const processSteps = [
 export function AssessmentGapSection() {
   // Example values for visualization
   const countyAssessment = 1000000;
-  const marketValue = 800000;
+  const marketValue = 750000;
   const maxValue = countyAssessment; // Use county as 100%
   const marketPercent = (marketValue / maxValue) * 100;
 
-  // Overassessment calculations
-  const overassessment = countyAssessment - marketValue;
-  const taxRate = 0.01875; // Austin, TX tax rate (1.875%)
-  const annualOverpayment = overassessment * taxRate;
+  // Tax calculations
+  const taxRatePercent = 1.88; // Austin, TX tax rate
+  const taxRate = taxRatePercent / 100;
+  const assessedTaxes = countyAssessment * taxRate;
+  const marketTaxes = marketValue * taxRate;
+  const estimatedSavings = assessedTaxes - marketTaxes;
 
   return (
-    <section className="bg-slate-100 px-4 py-16 md:py-24">
+    <section id="how-it-works" className="bg-slate-100 px-4 py-16 md:py-24">
       <div className="container mx-auto max-w-6xl">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left Column - Content */}
@@ -85,13 +87,15 @@ export function AssessmentGapSection() {
             {/* Stats */}
             <div className="flex gap-8">
               <div className="border-l-2 border-slate-300 pl-4">
-                <p className="text-2xl font-bold text-slate-900">20%</p>
+                <p className="text-2xl font-bold text-slate-900">25%</p>
                 <p className="text-sm text-slate-500">Market Correction</p>
               </div>
               <div className="border-l-2 border-emerald-500 pl-4">
-                <p className="text-2xl font-bold text-emerald-600">$3,750</p>
+                <p className="text-2xl font-bold text-emerald-600">
+                  ${Math.round(estimatedSavings).toLocaleString()}
+                </p>
                 <p className="text-sm text-slate-500">
-                  Estimate Annual Savings
+                  Estimated Annual Savings
                 </p>
               </div>
             </div>
@@ -133,22 +137,38 @@ export function AssessmentGapSection() {
                   />
                 </div>
 
-                {/* Assessment Difference */}
+                {/* Tax Breakdown */}
                 <div className="border-t border-slate-200 pt-4 mt-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Assessment Difference</span>
-                    <span className="font-semibold text-slate-900">
-                      ${overassessment.toLocaleString()}
-                    </span>
+                    <span className="text-slate-600">Taxes at Assessed Value</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500 italic">
+                        ${countyAssessment.toLocaleString()} × {taxRatePercent}% =
+                      </span>
+                      <span className="font-semibold text-slate-900">
+                        ${Math.round(assessedTaxes).toLocaleString()} / year
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between text-sm mt-3">
+                  <div className="mt-2 flex items-center justify-between text-sm">
+                    <span className="text-slate-600">Taxes at Market Value</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500 italic">
+                        ${marketValue.toLocaleString()} × {taxRatePercent}% =
+                      </span>
+                      <span className="font-semibold text-slate-900">
+                        ${Math.round(marketTaxes).toLocaleString()} / year
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Estimated Annual Savings</span>
                     <span className="font-semibold text-emerald-600">
-                      ${annualOverpayment.toLocaleString()} / year
+                      ${Math.round(estimatedSavings).toLocaleString()} / year
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 mt-3 italic">
-                    Based on Austin, TX property tax rate ({(taxRate * 100).toFixed(3)}%)
+                    Based on Austin, TX property tax rate ({taxRatePercent}%)
                   </p>
                 </div>
               </CardContent>

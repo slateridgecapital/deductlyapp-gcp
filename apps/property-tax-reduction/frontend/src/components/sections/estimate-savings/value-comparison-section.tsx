@@ -79,11 +79,17 @@ export function ValueComparisonSection({
             </div>
             <div className="mt-3 flex items-center justify-between text-sm">
               <span className="text-slate-600">Estimated Annual Savings</span>
-              <span className="font-semibold text-emerald-600">
-                $
-                {Math.round(Math.max(0, assessedTaxes - marketTaxes)).toLocaleString()}{" "}
-                / year
-              </span>
+              {Math.round(Math.max(0, assessedTaxes - marketTaxes)) === 0 ? (
+                <span className="font-semibold text-slate-900">
+                  No savings found
+                </span>
+              ) : (
+                <span className="font-semibold text-emerald-600">
+                  $
+                  {Math.round(Math.max(0, assessedTaxes - marketTaxes)).toLocaleString()}{" "}
+                  / year
+                </span>
+              )}
             </div>
           </div>
         </CardContent>

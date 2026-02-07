@@ -10,15 +10,15 @@ import { TrustDisclaimerSection } from "./trust-disclaimer-section";
 const COUNTY_DATA = {
   address: "123 Main St, Austin, TX 78701",
   assessedValue: 1_000_000,
-  marketValue: 950_000,
-  taxRatePercent: 1.875,
+  marketValue: 750_000,
+  taxRatePercent: 1.88,
 };
 
 const OUR_ESTIMATE = {
   address: "123 Main St, Austin, TX 78701",
   assessedValue: 1_000_000,
   marketValue: 750_000,
-  taxRatePercent: 1.2,
+  taxRatePercent: 1.88,
 };
 
 export function EstimateSavingsPage() {

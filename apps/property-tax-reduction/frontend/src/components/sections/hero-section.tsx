@@ -61,7 +61,7 @@ export function HeroSection() {
         </p>
 
         {/* Property Search Card */}
-        <Card className="mx-auto max-w-md shadow-lg rounded-sm">
+        <Card className="mx-auto max-w-[500px] shadow-lg rounded-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
             <div className="flex items-center gap-2">
               <Search className="h-4 w-4 text-slate-600" />
@@ -74,7 +74,7 @@ export function HeroSection() {
               className="bg-emerald-50 text-emerald-700"
             >
               <CheckCircle className="mr-1 h-3 w-3" />
-              Trusted by over 10,000 families
+              Saved $100k+ in taxes so far
             </Badge>
           </CardHeader>
           <CardContent className="space-y-4">
