@@ -144,14 +144,66 @@ Copy `.env.example` to `.env.local` and add your API keys for local development.
 
 - Google Cloud SDK authenticated (`gcloud auth login`)
 - Project set to `deductlyapp` (`gcloud config set project deductlyapp`)
-- Cloud Run API enabled (`gcloud services enable run.googleapis.com`)
+- Cloud Run API and Cloud Build API enabled
+- Required IAM permissions configured (see setup below)
 
-### Deploy from Source
+### Deploy with Cloud Build (Recommended)
+
+The deployment uses Cloud Build to build the Docker image and deploy to Cloud Run:
+
+```bash
+# From project root
+gcloud builds submit \
+  --region=us-central1 \
+  --default-buckets-behavior=regional-user-owned-bucket \
+  --config=apps/property-tax-reduction/frontend/cloudbuild.yaml \
+  .
+```
+
+The `cloudbuild.yaml` configuration:
+1. Builds the Docker image with multi-stage build
+2. Pushes to Artifact Registry (`us-central1-docker.pkg.dev/deductlyapp/cloud-run-source-deploy/property-tax-frontend`)
+3. Deploys to Cloud Run with proper configuration
+4. Tags images with BUILD_ID and 'latest'
+
+### One-Time Setup
+
+#### 1. Create Secret in Secret Manager
+
+```bash
+echo -n "YOUR_GOOGLE_PLACES_API_KEY" | gcloud secrets create GOOGLE_PLACES_API_KEY \
+  --replication-policy=user-managed \
+  --locations=us-central1 \
+  --data-file=- \
+  --labels=app=deductly,service=property-tax-frontend,environment=prod
+```
+
+#### 2. Grant IAM Permissions
+
+```bash
+# Grant Cloud Build service account permissions to deploy to Cloud Run
+gcloud projects add-iam-policy-binding deductlyapp \
+  --member="serviceAccount:965120872458-compute@developer.gserviceaccount.com" \
+  --role="roles/run.admin"
+
+# Grant service account permission to act as itself for Cloud Run
+gcloud iam service-accounts add-iam-policy-binding 965120872458-compute@developer.gserviceaccount.com \
+  --member="serviceAccount:965120872458-compute@developer.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+
+# Grant Cloud Run service account access to the secret
+gcloud secrets add-iam-policy-binding GOOGLE_PLACES_API_KEY \
+  --member="serviceAccount:965120872458-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+```
+
+### Manual Deployment (Alternative)
+
+Deploy directly from source without Cloud Build:
 
 ```bash
 cd apps/property-tax-reduction/frontend
 
-# Build and deploy (uses Dockerfile)
 gcloud run deploy property-tax-frontend \
   --source . \
   --region us-central1 \
@@ -161,25 +213,8 @@ gcloud run deploy property-tax-frontend \
   --cpu 1 \
   --timeout 60 \
   --max-instances 10 \
-  --set-env-vars "CALCULATOR_URL=https://us-central1-deductlyapp.cloudfunctions.net/property-tax-service,GOOGLE_PLACES_API_KEY=YOUR_KEY" \
-  --update-labels app=deductly,service=property-tax-frontend,environment=prod,managed-by=gcloud
-```
-
-### Deploy from Pre-Built Image
-
-If the image is already built in Artifact Registry, deploy directly:
-
-```bash
-gcloud run deploy property-tax-frontend \
-  --image us-central1-docker.pkg.dev/deductlyapp/cloud-run-source-deploy/property-tax-frontend:latest \
-  --region us-central1 \
-  --platform managed \
-  --no-allow-unauthenticated \
-  --memory 512Mi \
-  --cpu 1 \
-  --timeout 60 \
-  --max-instances 10 \
-  --set-env-vars "CALCULATOR_URL=https://us-central1-deductlyapp.cloudfunctions.net/property-tax-service,GOOGLE_PLACES_API_KEY=YOUR_KEY" \
+  --set-env-vars "CALCULATOR_URL=https://us-central1-deductlyapp.cloudfunctions.net/property-tax-service" \
+  --set-secrets="GOOGLE_PLACES_API_KEY=GOOGLE_PLACES_API_KEY:latest" \
   --update-labels app=deductly,service=property-tax-frontend,environment=prod,managed-by=gcloud
 ```
 
