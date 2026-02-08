@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 100_000_000;
 const MIN_TAX_RATE = 0;
-const MAX_TAX_RATE = 10;
+const MAX_TAX_RATE = 5;
 
 function parseFormattedNumber(value: string): number {
   const cleaned = value.replace(/,/g, "");
@@ -24,11 +25,10 @@ function formatNumber(value: number): string {
 }
 
 interface AdjustInputsPanelProps {
-  address: string;
   assessedValue: number;
   marketValue: number;
   taxRatePercent: number;
-  onAddressChange: (v: string) => void;
+  isLoading?: boolean;
   onAssessedValueChange: (v: number) => void;
   onMarketValueChange: (v: number) => void;
   onTaxRatePercentChange: (v: number) => void;
@@ -37,17 +37,50 @@ interface AdjustInputsPanelProps {
 }
 
 export function AdjustInputsPanel({
-  address,
   assessedValue,
   marketValue,
   taxRatePercent,
-  onAddressChange,
+  isLoading = false,
   onAssessedValueChange,
   onMarketValueChange,
   onTaxRatePercentChange,
   onResetToCounty,
   onResetToEstimate,
 }: AdjustInputsPanelProps) {
+  if (isLoading) {
+    return (
+      <section>
+        <Card className="shadow-sm rounded-sm border-slate-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+            <div className="flex items-center gap-2">
+              <Settings2 className="h-4 w-4 text-slate-600" />
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-700">
+                Adjust inputs
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-11 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-11 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-11 w-full" />
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Skeleton className="h-8 w-16" />
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    );
+  }
+
   const [assessedInput, setAssessedInput] = useState(formatNumber(assessedValue));
   const [marketInput, setMarketInput] = useState(formatNumber(marketValue));
   const [taxRateInput, setTaxRateInput] = useState(
@@ -58,20 +91,34 @@ export function AdjustInputsPanel({
   const [marketError, setMarketError] = useState<string | null>(null);
   const [taxRateError, setTaxRateError] = useState<string | null>(null);
 
-  // Sync local state with props when they change externally
+  // Track previous values to detect external changes
+  const [prevAssessedValue, setPrevAssessedValue] = useState(assessedValue);
+  const [prevMarketValue, setPrevMarketValue] = useState(marketValue);
+  const [prevTaxRatePercent, setPrevTaxRatePercent] = useState(taxRatePercent);
+
+  // Sync local state with props only when they change externally (e.g., from Reset button)
   useEffect(() => {
-    setAssessedInput(formatNumber(assessedValue));
-  }, [assessedValue]);
+    if (assessedValue !== prevAssessedValue) {
+      setAssessedInput(formatNumber(assessedValue));
+      setPrevAssessedValue(assessedValue);
+    }
+  }, [assessedValue, prevAssessedValue]);
 
   useEffect(() => {
-    setMarketInput(formatNumber(marketValue));
-  }, [marketValue]);
+    if (marketValue !== prevMarketValue) {
+      setMarketInput(formatNumber(marketValue));
+      setPrevMarketValue(marketValue);
+    }
+  }, [marketValue, prevMarketValue]);
 
   useEffect(() => {
-    setTaxRateInput(
-      taxRatePercent % 1 === 0 ? String(taxRatePercent) : taxRatePercent.toFixed(2)
-    );
-  }, [taxRatePercent]);
+    if (taxRatePercent !== prevTaxRatePercent) {
+      setTaxRateInput(
+        taxRatePercent % 1 === 0 ? String(taxRatePercent) : taxRatePercent.toFixed(2)
+      );
+      setPrevTaxRatePercent(taxRatePercent);
+    }
+  }, [taxRatePercent, prevTaxRatePercent]);
 
   const validateAndApplyAssessed = useCallback(
     (raw: string) => {
@@ -86,6 +133,7 @@ export function AdjustInputsPanel({
         return;
       }
       setAssessedError(null);
+      setPrevAssessedValue(num); // Track this as our own change
       onAssessedValueChange(num);
     },
     [onAssessedValueChange]
@@ -104,6 +152,7 @@ export function AdjustInputsPanel({
         return;
       }
       setMarketError(null);
+      setPrevMarketValue(num); // Track this as our own change
       onMarketValueChange(num);
     },
     [onMarketValueChange]
@@ -122,10 +171,20 @@ export function AdjustInputsPanel({
         return;
       }
       setTaxRateError(null);
+      setPrevTaxRatePercent(num); // Track this as our own change
       onTaxRatePercentChange(num);
     },
     [onTaxRatePercentChange]
   );
+
+  const handleTaxRateBlur = useCallback(() => {
+    const num = parseFloat(taxRateInput.replace(/,/g, ""));
+    if (!Number.isNaN(num) && num >= MIN_TAX_RATE && num <= MAX_TAX_RATE) {
+      // Format nicely when user is done typing
+      const formatted = num % 1 === 0 ? String(num) : num.toFixed(2);
+      setTaxRateInput(formatted);
+    }
+  }, [taxRateInput]);
 
   const handleResetToCounty = () => {
     setAssessedError(null);
@@ -143,7 +202,7 @@ export function AdjustInputsPanel({
 
   return (
     <section>
-      <Card className="shadow-lg rounded-sm">
+      <Card className="shadow-sm rounded-sm border-slate-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
           <div className="flex items-center gap-2">
             <Settings2 className="h-4 w-4 text-slate-600" />
@@ -153,18 +212,6 @@ export function AdjustInputsPanel({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input
-              id="address"
-              type="text"
-              value={address}
-              onChange={(e) => onAddressChange(e.target.value)}
-              className="h-11"
-              placeholder="Enter address..."
-            />
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="assessed">County Assessed Value</Label>
             <div className="relative">
@@ -218,6 +265,7 @@ export function AdjustInputsPanel({
                 inputMode="decimal"
                 value={taxRateInput}
                 onChange={(e) => validateAndApplyTaxRate(e.target.value)}
+                onBlur={handleTaxRateBlur}
                 className="h-11 pr-8"
                 placeholder="e.g. 1.2"
                 aria-invalid={!!taxRateError}

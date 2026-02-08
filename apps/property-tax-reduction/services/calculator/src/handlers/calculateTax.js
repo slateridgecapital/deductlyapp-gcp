@@ -38,7 +38,7 @@ async function calculateTax(req, res) {
       success: false,
       error: {
         code: 'METHOD_NOT_ALLOWED',
-        message: 'Only POST requests are accepted'
+        message: 'Only POST requests are accepted.'
       }
     });
     return;
@@ -105,11 +105,11 @@ async function calculateTax(req, res) {
       if (!propertyData) {
         res.status(404).json({
           success: false,
-          error: {
-            code: 'PROPERTY_NOT_FOUND',
-            message: 'Property data not found',
-            details: 'No data available for the provided address. Please verify the address and try again.'
-          },
+        error: {
+          code: 'PROPERTY_NOT_FOUND',
+          message: 'Property data not found.',
+          details: 'No data available for the provided address. Please verify the address and try again.'
+        },
           metadata: { requestId, address: trimmedAddress }
         });
         return;
@@ -142,18 +142,20 @@ async function calculateTax(req, res) {
     }
 
     // Step 4: Save to Firestore if this was a fresh scrape/calculation
+    // Fire-and-forget: don't block the response on cache writes
     if (!cacheHit) {
-      try {
-        logger.info('Saving data and calculations to Firestore', { requestId, address: trimmedAddress });
-        await savePropertyDataWithCalculations(trimmedAddress, propertyData, calculations);
-      } catch (saveError) {
-        // Log error but don't fail the request
-        logger.error('Failed to save to Firestore', {
-          requestId,
-          address: trimmedAddress,
-          error: saveError.message,
+      logger.info('Saving data and calculations to Firestore (async)', { requestId, address: trimmedAddress });
+      savePropertyDataWithCalculations(trimmedAddress, propertyData, calculations)
+        .then(() => {
+          logger.info('Firestore save completed', { requestId, address: trimmedAddress });
+        })
+        .catch((saveError) => {
+          logger.error('Failed to save to Firestore', {
+            requestId,
+            address: trimmedAddress,
+            error: saveError.message,
+          });
         });
-      }
     }
 
     const latencyMs = Date.now() - startTime;
@@ -221,12 +223,12 @@ async function calculateTax(req, res) {
     // Determine error type and status code
     let statusCode = 500;
     let errorCode = 'INTERNAL_ERROR';
-    let errorMessage = 'An unexpected error occurred while calculating property tax';
+    let errorMessage = 'An unexpected error occurred while calculating property tax.';
 
     if (error.message.includes('APIFY_API_KEY')) {
       statusCode = 503;
       errorCode = 'SERVICE_UNAVAILABLE';
-      errorMessage = 'Property data service is not configured';
+      errorMessage = 'Property data service is not configured.';
     } else if (error.message.includes('timeout')) {
       statusCode = 504;
       errorCode = 'GATEWAY_TIMEOUT';
@@ -234,7 +236,7 @@ async function calculateTax(req, res) {
     } else if (error.message.includes('Failed to scrape')) {
       statusCode = 503;
       errorCode = 'SERVICE_UNAVAILABLE';
-      errorMessage = 'Property data service is temporarily unavailable';
+      errorMessage = 'Property data service is temporarily unavailable.';
     }
 
     res.status(statusCode).json({

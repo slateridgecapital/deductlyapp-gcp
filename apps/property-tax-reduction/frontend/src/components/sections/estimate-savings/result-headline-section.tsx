@@ -2,16 +2,58 @@
 
 import { TrendingDown, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 interface ResultHeadlineSectionProps {
   hasSavings: boolean;
   estimatedSavings: number;
+  isLoading?: boolean;
+  progressPercent?: number;
+  progressStepLabel?: string;
+  progressStepIndex?: number;
+  progressTotalSteps?: number;
+  isBottlenecked?: boolean;
 }
 
 export function ResultHeadlineSection({
   hasSavings,
   estimatedSavings,
+  isLoading = false,
+  progressPercent = 0,
+  progressStepLabel = "",
+  progressStepIndex = 0,
+  progressTotalSteps = 8,
+  isBottlenecked = false,
 }: ResultHeadlineSectionProps) {
+  if (isLoading) {
+    return (
+      <section className="mb-12 text-center">
+        <h2 className="mb-4 text-lg font-medium text-slate-700">
+          Analyzing your property
+        </h2>
+        <div className="mx-auto max-w-md space-y-3">
+          <Progress value={progressPercent} className="h-2" />
+          <p
+            className={
+              isBottlenecked
+                ? "animate-pulse text-sm text-amber-600"
+                : "text-sm text-slate-600"
+            }
+          >
+            {isBottlenecked
+              ? "Taking a bit longer than expected — hang tight, we're working on it..."
+              : progressStepLabel}
+          </p>
+          {!isBottlenecked && progressTotalSteps > 0 && (
+            <p className="text-xs text-slate-500">
+              Step {progressStepIndex + 1} of {progressTotalSteps}
+            </p>
+          )}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="mb-12 text-center">
       {hasSavings ? (

@@ -23,11 +23,11 @@ function calculateTaxAnalysis(propertyData) {
 
   // Validate inputs
   if (!taxHistory || !Array.isArray(taxHistory) || taxHistory.length === 0) {
-    throw new Error('No tax history available for calculation');
+    throw new Error('No tax history available for calculation.');
   }
 
   if (!marketEstimate) {
-    throw new Error('Market estimate unavailable for calculation');
+    throw new Error('Market estimate unavailable for calculation.');
   }
 
   // Step 1: Derive tax rate from most recent complete entry
@@ -97,7 +97,7 @@ function deriveTaxRate(taxHistory) {
   );
 
   if (!completeEntry) {
-    throw new Error('No complete tax history available for rate calculation');
+    throw new Error('No complete tax history available for rate calculation.');
   }
 
   const taxRatePercent = parseFloat(
@@ -129,7 +129,7 @@ function getCurrentAssessment(taxHistory) {
   const recentAssessment = taxHistory.find(entry => entry.assessedValue);
 
   if (!recentAssessment) {
-    throw new Error('No assessed value found in tax history');
+    throw new Error('No assessed value found in tax history.');
   }
 
   logger.debug('Current assessment found', {

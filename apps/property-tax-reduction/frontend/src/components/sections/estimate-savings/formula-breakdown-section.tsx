@@ -2,6 +2,7 @@
 
 import { Calculator, HelpCircle } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -16,6 +17,7 @@ interface FormulaBreakdownSectionProps {
   assessedTaxes: number;
   marketTaxes: number;
   estimatedSavings: number;
+  isLoading?: boolean;
 }
 
 export function FormulaBreakdownSection({
@@ -25,7 +27,38 @@ export function FormulaBreakdownSection({
   assessedTaxes,
   marketTaxes,
   estimatedSavings,
+  isLoading = false,
 }: FormulaBreakdownSectionProps) {
+  if (isLoading) {
+    return (
+      <section className="mb-12">
+        <Card className="bg-slate-50/80 shadow-sm rounded-sm border-slate-200">
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Calculator className="h-4 w-4 text-slate-600" />
+            <span className="text-sm font-semibold text-slate-800">
+              How we calculate this
+            </span>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+            <div className="space-y-3 border-t border-slate-200 pt-4">
+              <Skeleton className="h-4 w-48" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-[85%]" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    );
+  }
+
   const assessedRounded = Math.round(assessedTaxes);
   const marketRounded = Math.round(marketTaxes);
   const savingsRounded = Math.round(estimatedSavings);

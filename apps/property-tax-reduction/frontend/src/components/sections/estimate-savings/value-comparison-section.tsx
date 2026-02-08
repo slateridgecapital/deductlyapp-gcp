@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ValueComparisonSectionProps {
   assessedValue: number;
@@ -9,6 +10,7 @@ interface ValueComparisonSectionProps {
   assessedTaxes: number;
   marketTaxes: number;
   taxRatePercent: number;
+  isLoading?: boolean;
 }
 
 export function ValueComparisonSection({
@@ -17,14 +19,59 @@ export function ValueComparisonSection({
   assessedTaxes,
   marketTaxes,
   taxRatePercent,
+  isLoading = false,
 }: ValueComparisonSectionProps) {
+  if (isLoading) {
+    return (
+      <section>
+        <Card className="shadow-sm rounded-sm border-slate-200">
+          <CardHeader>
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+              Valuation Comparison
+            </span>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <Skeleton className="h-3 w-full" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <Skeleton className="h-3 w-full" />
+            </div>
+            <div className="border-t border-slate-200 pt-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-4 w-28" />
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-4 w-28" />
+              </div>
+              <div className="flex items-center justify-between pt-2">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    );
+  }
+
   const maxValue = Math.max(assessedValue, marketValue, 1);
   const assessedPercent = (assessedValue / maxValue) * 100;
   const marketPercent = (marketValue / maxValue) * 100;
 
   return (
     <section>
-      <Card className="shadow-lg rounded-sm">
+      <Card className="shadow-sm rounded-sm border-slate-200">
         <CardHeader>
           <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
             Valuation Comparison
