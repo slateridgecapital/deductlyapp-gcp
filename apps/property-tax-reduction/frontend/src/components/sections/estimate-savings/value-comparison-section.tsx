@@ -1,5 +1,6 @@
 "use client";
 
+import { ClipboardCheck } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,7 +27,8 @@ export function ValueComparisonSection({
       <section>
         <Card className="shadow-sm rounded-sm border-slate-200">
           <CardHeader>
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+            <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              <ClipboardCheck className="h-4 w-4" />
               Valuation Comparison
             </span>
           </CardHeader>
@@ -77,7 +79,8 @@ export function ValueComparisonSection({
     <section>
       <Card className="shadow-sm rounded-sm border-slate-200">
         <CardHeader>
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+            <ClipboardCheck className="h-4 w-4" />
             Valuation Comparison
           </span>
         </CardHeader>
@@ -86,7 +89,7 @@ export function ValueComparisonSection({
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-600">County Assessed Value</span>
               <span className="font-semibold text-slate-900">
-                ${assessedValue.toLocaleString()}
+                ${assessedValue.toLocaleString('en-US')}
               </span>
             </div>
             <Progress value={assessedPercent} className="h-3 bg-slate-200" />
@@ -96,7 +99,7 @@ export function ValueComparisonSection({
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-600">Estimated Market Value</span>
               <span className="font-semibold text-slate-900">
-                ${marketValue.toLocaleString()}
+                ${marketValue.toLocaleString('en-US')}
               </span>
             </div>
             <Progress
@@ -109,22 +112,22 @@ export function ValueComparisonSection({
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-600">Taxes at Assessed Value</span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500 italic">
-                  ${assessedValue.toLocaleString()} × {taxRatePercent}% =
+                <span className="hidden md:inline text-xs text-slate-500 italic">
+                  ${assessedValue.toLocaleString('en-US')} × {taxRatePercent}% =
                 </span>
                 <span className="font-semibold text-slate-900">
-                  ${Math.round(assessedTaxes).toLocaleString()} / year
+                  ${Math.round(assessedTaxes).toLocaleString('en-US')} <span className="md:hidden">/ yr</span><span className="hidden md:inline">/ year</span>
                 </span>
               </div>
             </div>
             <div className="mt-2 flex items-center justify-between text-sm">
               <span className="text-slate-600">Taxes at Market Value</span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500 italic">
-                  ${marketValue.toLocaleString()} × {taxRatePercent}% =
+                <span className="hidden md:inline text-xs text-slate-500 italic">
+                  ${marketValue.toLocaleString('en-US')} × {taxRatePercent}% =
                 </span>
                 <span className="font-semibold text-slate-900">
-                  ${Math.round(marketTaxes).toLocaleString()} / year
+                  ${Math.round(marketTaxes).toLocaleString('en-US')} <span className="md:hidden">/ yr</span><span className="hidden md:inline">/ year</span>
                 </span>
               </div>
             </div>
@@ -137,8 +140,8 @@ export function ValueComparisonSection({
               ) : (
                 <span className="font-semibold text-emerald-600">
                   $
-                  {Math.round(Math.max(0, assessedTaxes - marketTaxes)).toLocaleString()}{" "}
-                  / year
+                  {Math.round(Math.max(0, assessedTaxes - marketTaxes)).toLocaleString('en-US')}{" "}
+                  <span className="md:hidden">/ yr</span><span className="hidden md:inline">/ year</span>
                 </span>
               )}
             </div>

@@ -175,14 +175,14 @@ export function HeroSection() {
 
       <div className="container relative z-10 mx-auto max-w-4xl text-center">
         {/* Headline */}
-        <h1 className="mb-6 font-serif text-4xl leading-tight tracking-[-1px] text-slate-900 md:text-5xl lg:text-6xl">
+        <h1 className="mb-6 font-serif text-[32px] leading-tight tracking-[-1px] text-slate-900 md:text-5xl lg:text-6xl">
           Home prices fell.
           <br />
           <em>Your</em> property taxes didn&apos;t.
         </h1>
 
         {/* Subheadline */}
-        <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-600">
+        <p className="mx-auto mb-10 max-w-2xl text-base text-slate-600 md:text-lg">
           Within seconds, we compare your tax assessment to today&apos;s market to see if you could lower your taxes.
         </p>
 
@@ -197,7 +197,7 @@ export function HeroSection() {
             </div>
             <Badge
               variant="secondary"
-              className="bg-emerald-50 text-emerald-700"
+              className="bg-emerald-50 text-emerald-700 hidden lg:inline-flex"
             >
               <CheckCircle className="mr-1 h-3 w-3" />
               Saved $100k+ in taxes so far

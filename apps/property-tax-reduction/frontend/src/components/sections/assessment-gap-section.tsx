@@ -61,7 +61,7 @@ export function AssessmentGapSection() {
             </Badge>
 
             {/* Title */}
-            <h2 className="mb-4 text-3xl font-bold text-slate-900 md:text-4xl">
+            <h2 className="mb-4 text-[30px] font-bold text-slate-900 lg:text-4xl">
               How this works
             </h2>
 
@@ -92,7 +92,7 @@ export function AssessmentGapSection() {
               </div>
               <div className="border-l-2 border-emerald-500 pl-4">
                 <p className="text-2xl font-bold text-emerald-600">
-                  ${Math.round(estimatedSavings).toLocaleString()}
+                  ${Math.round(estimatedSavings).toLocaleString('en-US')}
                 </p>
                 <p className="text-sm text-slate-500">
                   Estimated Annual Savings
@@ -105,7 +105,8 @@ export function AssessmentGapSection() {
           <div className="flex items-center">
             <Card className="w-full shadow-lg py-4 gap-4">
               <CardHeader>
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  <ClipboardCheck className="h-4 w-4" />
                   Valuation Comparison
                 </span>
               </CardHeader>
@@ -117,7 +118,7 @@ export function AssessmentGapSection() {
                       County Assessed Value
                     </span>
                     <span className="font-semibold text-slate-900">
-                      ${countyAssessment.toLocaleString()}
+                      ${countyAssessment.toLocaleString('en-US')}
                     </span>
                   </div>
                   <Progress value={100} className="h-3 bg-slate-200" />
@@ -128,7 +129,7 @@ export function AssessmentGapSection() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-600">Estimated Market Value</span>
                     <span className="font-semibold text-slate-900">
-                      ${marketValue.toLocaleString()}
+                      ${marketValue.toLocaleString('en-US')}
                     </span>
                   </div>
                   <Progress
@@ -142,29 +143,29 @@ export function AssessmentGapSection() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-600">Taxes at Assessed Value</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500 italic">
-                        ${countyAssessment.toLocaleString()} × {taxRatePercent}% =
+                      <span className="text-xs text-slate-500 italic hidden lg:inline">
+                        ${countyAssessment.toLocaleString('en-US')} × {taxRatePercent}% =
                       </span>
                       <span className="font-semibold text-slate-900">
-                        ${Math.round(assessedTaxes).toLocaleString()} / year
+                        ${Math.round(assessedTaxes).toLocaleString('en-US')} <span className="lg:hidden">/ yr</span><span className="hidden lg:inline">/ year</span>
                       </span>
                     </div>
                   </div>
                   <div className="mt-2 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Taxes at Market Value</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500 italic">
-                        ${marketValue.toLocaleString()} × {taxRatePercent}% =
+                      <span className="text-xs text-slate-500 italic hidden lg:inline">
+                        ${marketValue.toLocaleString('en-US')} × {taxRatePercent}% =
                       </span>
                       <span className="font-semibold text-slate-900">
-                        ${Math.round(marketTaxes).toLocaleString()} / year
+                        ${Math.round(marketTaxes).toLocaleString('en-US')} <span className="lg:hidden">/ yr</span><span className="hidden lg:inline">/ year</span>
                       </span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Estimated Annual Savings</span>
                     <span className="font-semibold text-emerald-600">
-                      ${Math.round(estimatedSavings).toLocaleString()} / year
+                      ${Math.round(estimatedSavings).toLocaleString('en-US')} <span className="lg:hidden">/ yr</span><span className="hidden lg:inline">/ year</span>
                     </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between text-sm">

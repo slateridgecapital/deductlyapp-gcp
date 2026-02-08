@@ -56,14 +56,14 @@ export function ResultHeadlineSection({
     <section className="mb-12 text-center">
       {hasSavings ? (
         <>
-          <h1 className="mb-4 font-serif text-3xl leading-tight tracking-[-1px] text-slate-900 md:text-4xl">
+          <h1 className="mb-4 font-serif text-[28px] leading-tight tracking-[-1px] text-slate-900 lg:text-4xl">
             You could save up to{" "}
             <span className="text-emerald-600">
-              ${Math.round(estimatedSavings).toLocaleString()}
+              ${Math.round(estimatedSavings).toLocaleString('en-US')}
             </span>{" "}
             per year
           </h1>
-          <p className="mx-auto max-w-xl text-lg text-slate-600">
+          <p className="mx-auto max-w-xl text-base text-slate-600 lg:text-lg">
             Based on current data, your property may be over-assessed compared
             to today&apos;s market value. The estimate below shows what a
             reduced assessment could mean for your annual tax bill.
@@ -74,7 +74,7 @@ export function ResultHeadlineSection({
           <h1 className="mb-4 font-serif text-3xl leading-tight tracking-[-1px] text-slate-900 md:text-4xl">
             Your assessment looks in line
           </h1>
-          <p className="mx-auto max-w-xl text-lg text-slate-600">
+          <p className="mx-auto max-w-xl text-base text-slate-600 lg:text-lg">
             Your assessment appears to be in line with or below current market
             value. You can adjust the inputs below to explore different
             scenarios.

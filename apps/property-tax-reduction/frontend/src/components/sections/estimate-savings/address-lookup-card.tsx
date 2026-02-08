@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MapPin, Loader2 } from "lucide-react";
+import { MapPin, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,7 @@ export function AddressLookupCard({
   const [selectedFromAutocomplete, setSelectedFromAutocomplete] =
     useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed on mobile
   const inputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -171,8 +172,20 @@ export function AddressLookupCard({
               Property address
             </span>
           </div>
+          <button
+            type="button"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="md:hidden p-1 hover:bg-slate-100 rounded transition-colors"
+            aria-label={isCollapsed ? "Expand address form" : "Collapse address form"}
+          >
+            {isCollapsed ? (
+              <ChevronDown className="h-5 w-5 text-slate-600" />
+            ) : (
+              <ChevronUp className="h-5 w-5 text-slate-600" />
+            )}
+          </button>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className={`space-y-4 ${isCollapsed ? "hidden md:block" : "block"}`}>
           <div className="space-y-2">
             <Label htmlFor="address">Address</Label>
             <Popover

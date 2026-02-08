@@ -55,7 +55,7 @@ export function TestimonialsSection() {
         {/* Header */}
         <div className="mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold text-slate-900 md:text-4xl">
-            What homeowners are saying
+            Testimonials
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-slate-600">
             Real results from homeowners who checked their property tax

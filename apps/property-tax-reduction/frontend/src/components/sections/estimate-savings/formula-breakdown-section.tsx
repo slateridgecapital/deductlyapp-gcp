@@ -105,8 +105,8 @@ export function FormulaBreakdownSection({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                {" "}taxes = ${assessedValue.toLocaleString()} × {taxRatePercent}% = $
-                {assessedRounded.toLocaleString()}
+                {" "}taxes = ${assessedValue.toLocaleString('en-US')} × {taxRatePercent}% = $
+                {assessedRounded.toLocaleString('en-US')}
               </p>
               <p>
                 <TooltipProvider>
@@ -124,8 +124,8 @@ export function FormulaBreakdownSection({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                {" "}taxes = ${marketValue.toLocaleString()} × {taxRatePercent}% = $
-                {marketRounded.toLocaleString()}
+                {" "}taxes = ${marketValue.toLocaleString('en-US')} × {taxRatePercent}% = $
+                {marketRounded.toLocaleString('en-US')}
               </p>
               <p>
                 <TooltipProvider>
@@ -143,9 +143,9 @@ export function FormulaBreakdownSection({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                {" "}— Estimated savings = ${assessedRounded.toLocaleString()} − $
-                {marketRounded.toLocaleString()} = $
-                {savingsRounded.toLocaleString()}
+                {" "}— Estimated savings = ${assessedRounded.toLocaleString('en-US')} − $
+                {marketRounded.toLocaleString('en-US')} = $
+                {savingsRounded.toLocaleString('en-US')}
               </p>
             </div>
           </div>

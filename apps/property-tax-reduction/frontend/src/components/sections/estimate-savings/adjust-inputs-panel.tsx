@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Settings2 } from "lucide-react";
+import { Settings2, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ function parseFormattedNumber(value: string): number {
 
 function formatNumber(value: number): string {
   if (value === 0) return "";
-  return value.toLocaleString();
+  return value.toLocaleString('en-US');
 }
 
 interface AdjustInputsPanelProps {
@@ -47,6 +47,8 @@ export function AdjustInputsPanel({
   onResetToCounty,
   onResetToEstimate,
 }: AdjustInputsPanelProps) {
+  const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed on mobile
+
   if (isLoading) {
     return (
       <section>
@@ -58,8 +60,20 @@ export function AdjustInputsPanel({
                 Adjust inputs
               </span>
             </div>
+            <button
+              type="button"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="md:hidden p-1 hover:bg-slate-100 rounded transition-colors"
+              aria-label={isCollapsed ? "Expand adjust inputs" : "Collapse adjust inputs"}
+            >
+              {isCollapsed ? (
+                <ChevronDown className="h-5 w-5 text-slate-600" />
+              ) : (
+                <ChevronUp className="h-5 w-5 text-slate-600" />
+              )}
+            </button>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className={`space-y-4 ${isCollapsed ? "hidden md:block" : "block"}`}>
             <div className="space-y-2">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-11 w-full" />
@@ -129,7 +143,7 @@ export function AdjustInputsPanel({
         return;
       }
       if (num < MIN_VALUE || num > MAX_VALUE) {
-        setAssessedError(`Enter a value between ${MIN_VALUE.toLocaleString()} and ${MAX_VALUE.toLocaleString()}`);
+        setAssessedError(`Enter a value between ${MIN_VALUE.toLocaleString('en-US')} and ${MAX_VALUE.toLocaleString('en-US')}`);
         return;
       }
       setAssessedError(null);
@@ -148,7 +162,7 @@ export function AdjustInputsPanel({
         return;
       }
       if (num < MIN_VALUE || num > MAX_VALUE) {
-        setMarketError(`Enter a value between ${MIN_VALUE.toLocaleString()} and ${MAX_VALUE.toLocaleString()}`);
+        setMarketError(`Enter a value between ${MIN_VALUE.toLocaleString('en-US')} and ${MAX_VALUE.toLocaleString('en-US')}`);
         return;
       }
       setMarketError(null);
@@ -210,8 +224,20 @@ export function AdjustInputsPanel({
               Adjust inputs
             </span>
           </div>
+          <button
+            type="button"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="md:hidden p-1 hover:bg-slate-100 rounded transition-colors"
+            aria-label={isCollapsed ? "Expand adjust inputs" : "Collapse adjust inputs"}
+          >
+            {isCollapsed ? (
+              <ChevronDown className="h-5 w-5 text-slate-600" />
+            ) : (
+              <ChevronUp className="h-5 w-5 text-slate-600" />
+            )}
+          </button>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className={`space-y-4 ${isCollapsed ? "hidden md:block" : "block"}`}>
           <div className="space-y-2">
             <Label htmlFor="assessed">County Assessed Value</Label>
             <div className="relative">

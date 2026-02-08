@@ -73,7 +73,7 @@ export function Header() {
         </nav>
 
         {/* CTA */}
-        <Link href="/estimate" className="cursor-pointer">
+        <Link href="/estimate" className="cursor-pointer hidden md:block">
           <Button className="bg-slate-900 text-white hover:bg-slate-800 cursor-pointer">
             Estimate Savings
             <ArrowRight className="ml-2 h-4 w-4" />
