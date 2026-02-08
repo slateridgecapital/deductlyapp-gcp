@@ -31,6 +31,26 @@ Calculate potential property tax savings by comparing a property's current asses
 - **Current Assessment Source**: Uses most recent assessment (e.g., 2025)
 - **Savings Delta**: Shows actual difference (positive = potential savings, negative = no benefit)
 
+### Multi-Unit Building Handling
+
+When scraping multi-unit buildings (apartments, condos):
+
+1. **Address Format**: Uses "#" format for units (e.g., "401 Harrison St #11G, San Francisco, CA 94105") - Zillow's standard format
+2. **Address Cleaning**: Removes "USA" suffix and normalizes format for better Zillow matching
+3. **Mismatch Detection**: Compares requested unit vs returned unit, warns if different
+4. **Frontend Rejection**: Frontend rejects results when unit mismatch is detected
+
+**Example:**
+```javascript
+// Input: "401 Harrison St, Apt 11G, San Francisco, CA 94105, USA"
+// Step 1: Frontend converts to "#" format → "401 Harrison St #11G, San Francisco, CA 94105, USA"
+// Step 2: Backend cleans address → "401 Harrison St #11G, San Francisco, CA 94105"
+// Step 3: Zillow fuzzy search finds best match for unit 11G
+// Step 4: Backend compares: requested "11G" vs returned "11G" or "13B"
+// Step 5: If mismatch (e.g., "13B" returned), warning added to response
+// Step 6: Frontend detects warning and rejects result with clear error message
+```
+
 ### Calculation Example
 
 ```javascript
@@ -330,6 +350,8 @@ gcloud functions add-invoker-policy-binding property-tax-service \
 | Scenario | Handling |
 |----------|----------|
 | Address not found | Return 404 with helpful message |
+| Multi-unit building (apartment/condo) | Use "#" format, clean address for better Zillow matching |
+| Unit number mismatch | Backend adds warning, frontend rejects result with clear error message |
 | Incomplete tax history (2025 assessment, no tax paid) | Use 2025 assessment + 2024 tax rate |
 | No complete tax history (all entries missing taxPaid) | Return 400 "Cannot calculate tax rate" |
 | Missing assessedValue in all entries | Return 400 "No assessed value found" |

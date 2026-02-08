@@ -16,6 +16,26 @@ const { config } = require('../config');
 const logger = require('../utils/logger');
 
 /**
+ * Clean address for Zillow search
+ * Remove "USA" suffix and normalize format for better Zillow matching
+ * @param {string} address - Address string
+ * @returns {string} Cleaned address
+ */
+function cleanAddressForZillow(address) {
+  if (!address) return address;
+  
+  let cleaned = address.trim();
+  
+  // Remove ", USA" or ", United States" from the end
+  cleaned = cleaned.replace(/,\s*(USA|United States|U\.S\.A\.)$/i, '');
+  
+  // Normalize multiple spaces
+  cleaned = cleaned.replace(/\s+/g, ' ');
+  
+  return cleaned.trim();
+}
+
+/**
  * Extract unit number from address string
  * @param {string} address - Address string
  * @returns {string|null} Unit number or null
@@ -89,15 +109,19 @@ async function scrapePropertyData(address) {
     token: config.apify.apiKey,
   });
 
+  // Clean address for better Zillow matching
+  const cleanedAddress = cleanAddressForZillow(address);
+  
   logger.info('Starting Zillow scraper', { 
-    address,
+    originalAddress: address,
+    cleanedAddress,
     actorId: config.apify.zillowActorId 
   });
 
   try {
     // Run the Zillow scraper actor
     const run = await client.actor(config.apify.zillowActorId).call({
-      addresses: [address],
+      addresses: [cleanedAddress],
       // Note: Removed propertyStatus filter to search all properties, not just recently sold
     }, {
       timeout: config.apify.timeoutMs,
@@ -117,6 +141,7 @@ async function scrapePropertyData(address) {
     }
 
     const rawData = items[0];
+
     
     // Log full raw JSON for debugging
     logger.debug('Raw Zillow data', { 

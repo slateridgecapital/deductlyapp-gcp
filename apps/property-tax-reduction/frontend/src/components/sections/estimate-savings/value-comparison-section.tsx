@@ -58,6 +58,10 @@ export function ValueComparisonSection({
                 <Skeleton className="h-4 w-40" />
                 <Skeleton className="h-4 w-24" />
               </div>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-16" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -135,6 +139,16 @@ export function ValueComparisonSection({
                   $
                   {Math.round(Math.max(0, assessedTaxes - marketTaxes)).toLocaleString()}{" "}
                   / year
+                </span>
+              )}
+            </div>
+            <div className="mt-2 flex items-center justify-between text-sm">
+              <span className="text-slate-600">Estimated Savings Percentage</span>
+              {Math.round(Math.max(0, assessedTaxes - marketTaxes)) === 0 ? (
+                <span className="font-semibold text-slate-900">—</span>
+              ) : (
+                <span className="font-semibold text-emerald-600">
+                  {((Math.max(0, assessedTaxes - marketTaxes) / assessedTaxes) * 100).toFixed(1)}%
                 </span>
               )}
             </div>

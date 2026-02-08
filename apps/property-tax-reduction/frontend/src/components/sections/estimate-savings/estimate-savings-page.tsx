@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { useProgressSteps } from "@/hooks/use-progress-steps";
 import { ResultHeadlineSection } from "./result-headline-section";
 import { ValueComparisonSection } from "./value-comparison-section";
@@ -8,6 +9,18 @@ import { AdjustInputsPanel } from "./adjust-inputs-panel";
 import { AddressLookupCard } from "./address-lookup-card";
 import { FormulaBreakdownSection } from "./formula-breakdown-section";
 import { TrustDisclaimerSection } from "./trust-disclaimer-section";
+
+function buildFullAddress(baseAddress: string, unitNumber: string): string {
+  const trimmed = baseAddress.trim();
+  const unit = unitNumber.trim();
+  if (!unit) return trimmed;
+  const parts = trimmed.split(", ");
+  const filtered = parts.filter(
+    (p) => !/^(unit|apt|suite|ste|#)\s/i.test(p.trim())
+  );
+  if (filtered.length <= 1) return `${filtered[0]} #${unit}`;
+  return [filtered[0] + ` #${unit}`, ...filtered.slice(1)].join(", ");
+}
 
 interface PropertyData {
   assessedValue: number;
@@ -82,7 +95,8 @@ interface PreviousValues {
 }
 
 export function EstimateSavingsPage() {
-  const [address, setAddress] = useState(OUR_ESTIMATE.address);
+  const searchParams = useSearchParams();
+  const [address, setAddress] = useState("");
   const [assessedValue, setAssessedValue] = useState(OUR_ESTIMATE.assessedValue);
   const [marketValue, setMarketValue] = useState(OUR_ESTIMATE.marketValue);
   const [taxRatePercent, setTaxRatePercent] = useState(
@@ -91,19 +105,21 @@ export function EstimateSavingsPage() {
   const [resetKey, setResetKey] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasAutoLookedUpRef = useRef(false);
 
   const previousValuesRef = useRef<PreviousValues>({
-    address: OUR_ESTIMATE.address,
+    address: "",
     assessedValue: OUR_ESTIMATE.assessedValue,
     marketValue: OUR_ESTIMATE.marketValue,
     taxRatePercent: OUR_ESTIMATE.taxRatePercent,
   });
   const pendingDataRef = useRef<PropertyData | null>(null);
   const lastLookupAddressRef = useRef<string>("");
-  
+  const lastDisplayAddressRef = useRef<string>("");
+
   // Store the last successful lookup data for reset functionality
   const lastSuccessfulLookupRef = useRef<PreviousValues>({
-    address: OUR_ESTIMATE.address,
+    address: "",
     assessedValue: OUR_ESTIMATE.assessedValue,
     marketValue: OUR_ESTIMATE.marketValue,
     taxRatePercent: OUR_ESTIMATE.taxRatePercent,
@@ -111,59 +127,64 @@ export function EstimateSavingsPage() {
 
   const progress = useProgressSteps();
 
-  const handleAddressLookup = async (lookupAddress: string) => {
-    previousValuesRef.current = {
-      address,
-      assessedValue,
-      marketValue,
-      taxRatePercent,
-    };
-    lastLookupAddressRef.current = lookupAddress;
-    setError(null);
-    progress.start();
-    setIsLoading(true);
-    pendingDataRef.current = null;
+  const handleAddressLookup = useCallback(
+    async (lookupAddress: string, displayAddress?: string) => {
+      const display = displayAddress ?? lookupAddress;
+      previousValuesRef.current = {
+        address,
+        assessedValue,
+        marketValue,
+        taxRatePercent,
+      };
+      lastLookupAddressRef.current = lookupAddress;
+      lastDisplayAddressRef.current = display;
+      setError(null);
+      progress.start();
+      setIsLoading(true);
+      pendingDataRef.current = null;
 
-    try {
-      const data = await fetchAddressLookup(lookupAddress);
-      pendingDataRef.current = data;
-      progress.markDataReady();
-    } catch (err) {
-      progress.stop();
-      setIsLoading(false);
-      const message =
-        err instanceof Error ? err.message : "Something went wrong. Please try again.";
       try {
-        const parsed = JSON.parse(message) as { code?: string; message?: string };
-        setError(parsed.message ?? getErrorMessage(parsed.code ?? "INTERNAL_ERROR"));
-      } catch {
-        setError(
-          message.startsWith("{") ? getErrorMessage("INTERNAL_ERROR") : message
-        );
+        const data = await fetchAddressLookup(lookupAddress);
+        pendingDataRef.current = data;
+        progress.markDataReady();
+      } catch (err) {
+        progress.stop();
+        setIsLoading(false);
+        const message =
+          err instanceof Error ? err.message : "Something went wrong. Please try again.";
+        try {
+          const parsed = JSON.parse(message) as { code?: string; message?: string };
+          setError(parsed.message ?? getErrorMessage(parsed.code ?? "INTERNAL_ERROR"));
+        } catch {
+          setError(
+            message.startsWith("{") ? getErrorMessage("INTERNAL_ERROR") : message
+          );
+        }
+        const prev = previousValuesRef.current;
+        setAddress(prev.address);
+        setAssessedValue(prev.assessedValue);
+        setMarketValue(prev.marketValue);
+        setTaxRatePercent(prev.taxRatePercent);
+        setResetKey((k) => k + 1);
       }
-      const prev = previousValuesRef.current;
-      setAddress(prev.address);
-      setAssessedValue(prev.assessedValue);
-      setMarketValue(prev.marketValue);
-      setTaxRatePercent(prev.taxRatePercent);
-      setResetKey((k) => k + 1);
-    }
-  };
+    },
+    [address, assessedValue, marketValue, taxRatePercent, progress]
+  );
 
   useEffect(() => {
     if (!progress.isComplete || !pendingDataRef.current) return;
     const data = pendingDataRef.current;
-    const lookupAddress = lastLookupAddressRef.current;
-    
+    const displayAddress = lastDisplayAddressRef.current;
+
     // Store successful lookup data for reset functionality
     lastSuccessfulLookupRef.current = {
-      address: lookupAddress,
+      address: displayAddress,
       assessedValue: data.assessedValue,
       marketValue: data.marketValue,
       taxRatePercent: data.taxRatePercent,
     };
-    
-    setAddress(lookupAddress);
+
+    setAddress(displayAddress);
     setAssessedValue(data.assessedValue);
     setMarketValue(data.marketValue);
     setTaxRatePercent(data.taxRatePercent);
@@ -171,6 +192,22 @@ export function EstimateSavingsPage() {
     setIsLoading(false);
     progress.stop();
   }, [progress.isComplete]);
+
+  // Auto-lookup address from URL parameters on page load
+  useEffect(() => {
+    if (hasAutoLookedUpRef.current) return;
+    const addressParam = searchParams.get("address");
+    const aptParam = searchParams.get("apt");
+    if (addressParam?.trim()) {
+      hasAutoLookedUpRef.current = true;
+      const base = addressParam.trim();
+      setAddress(base); // Populate address field immediately so both fields display
+      const fullAddress = aptParam?.trim()
+        ? buildFullAddress(base, aptParam.trim())
+        : base;
+      handleAddressLookup(fullAddress, base);
+    }
+  }, [searchParams, handleAddressLookup]);
 
   const { assessedTaxes, marketTaxes, estimatedSavings, hasSavings } =
     useMemo(() => {
@@ -221,6 +258,7 @@ export function EstimateSavingsPage() {
         <div className="lg:col-span-1 space-y-6">
           <AddressLookupCard
             address={address}
+            initialApt={searchParams.get("apt") || ""}
             isLoading={isLoading}
             onLookup={handleAddressLookup}
             error={error}

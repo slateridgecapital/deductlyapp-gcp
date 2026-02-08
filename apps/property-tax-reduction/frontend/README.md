@@ -79,12 +79,11 @@ npx shadcn@latest add [component-name]
 
 ## Environment Variables
 
-Currently no environment variables required. Future API integration will require:
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GOOGLE_PLACES_API_KEY` | Yes (for autocomplete) | Google Places API (New) key for address autocomplete. Create in [Google Cloud Console](https://console.cloud.google.com/apis/credentials). Enable Places API (New). |
 
-```bash
-# .env.local
-NEXT_PUBLIC_API_URL=https://api.example.com
-```
+Copy `.env.example` to `.env.local` and add your API key.
 
 ## GCP Resources
 
@@ -108,9 +107,6 @@ gcloud run deploy property-tax-frontend \
 
 ## Current Status
 
-This is a **static UI implementation** with no backend integration:
-- Address input is non-functional (placeholder only)
-- All displayed values are hardcoded examples
-- Button clicks have no action
-
-Future phases will connect to the existing calculator backend at `POST /calculate`.
+- **Address autocomplete**: Google Places API (New) powers address suggestions. Set `GOOGLE_PLACES_API_KEY` for autocomplete.
+- **Apartment/condo handling**: When a multi-unit property is detected, a required "Unit / Apt #" field appears. Validation blocks submission if unit is missing.
+- **Calculator integration**: `/api/calculate` proxies to the calculator backend for tax estimates.

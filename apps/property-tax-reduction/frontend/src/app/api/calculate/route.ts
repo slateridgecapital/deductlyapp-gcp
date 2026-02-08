@@ -11,14 +11,14 @@ const isLocalhost =
 let cachedToken: string | null = null;
 let tokenExpiresAt = 0;
 const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000; // refresh 5 min before expiry
-let authClientPromise: Promise<GoogleAuth> | null = null;
+let authInstance: GoogleAuth | null = null;
 
 function getAuthInstance(): GoogleAuth {
   // GoogleAuth is safe to reuse — it caches credentials internally
-  if (!authClientPromise) {
-    authClientPromise = Promise.resolve(new GoogleAuth());
+  if (!authInstance) {
+    authInstance = new GoogleAuth();
   }
-  return authClientPromise as unknown as GoogleAuth;
+  return authInstance;
 }
 
 async function getIdToken(audience: string): Promise<string> {

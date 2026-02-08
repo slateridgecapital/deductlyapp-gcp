@@ -68,15 +68,15 @@ export function AssessmentGapSection() {
             {/* Process Steps */}
             <div className="mb-8 space-y-2">
               {processSteps.map((step) => (
-                <div key={step.number} className="flex items-start gap-3">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white shadow-md">
-                    <step.icon className="h-3.5 w-3.5 text-slate-700" />
+                <div key={step.number} className="flex items-stretch gap-3">
+                  <div className="flex w-12 shrink-0 items-center justify-center rounded-md bg-white shadow-md">
+                    <step.icon className="h-6 w-6 text-slate-700" />
                   </div>
                   <div>
-                    <span className="text-sm font-semibold text-slate-900">
+                    <span className="text-base font-semibold text-slate-900">
                       {step.number}. {step.title}
                     </span>
-                    <p className="text-xs leading-relaxed text-slate-500">
+                    <p className="text-sm leading-relaxed text-slate-500">
                       {step.description}
                     </p>
                   </div>
@@ -165,6 +165,12 @@ export function AssessmentGapSection() {
                     <span className="text-slate-600">Estimated Annual Savings</span>
                     <span className="font-semibold text-emerald-600">
                       ${Math.round(estimatedSavings).toLocaleString()} / year
+                    </span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-sm">
+                    <span className="text-slate-600">Estimated Savings Percentage</span>
+                    <span className="font-semibold text-emerald-600">
+                      {((estimatedSavings / assessedTaxes) * 100).toFixed(1)}%
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 mt-3 italic">
