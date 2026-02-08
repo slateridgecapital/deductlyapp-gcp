@@ -33,7 +33,7 @@ steps:
       - '--image=us-central1-docker.pkg.dev/${PROJECT_ID}/cloud-run-source-deploy/property-tax-frontend:${BUILD_ID}'
       - '--region=us-central1'
       - '--platform=managed'
-      - '--no-allow-unauthenticated'
+      - '--allow-unauthenticated'
       - '--memory=512Mi'
       - '--cpu=1'
       - '--timeout=60'

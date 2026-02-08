@@ -208,7 +208,7 @@ gcloud run deploy property-tax-frontend \
   --source . \
   --region us-central1 \
   --platform managed \
-  --no-allow-unauthenticated \
+  --allow-unauthenticated \
   --memory 512Mi \
   --cpu 1 \
   --timeout 60 \
@@ -280,4 +280,4 @@ Key settings in `next.config.ts`:
 - **Address autocomplete**: Google Places API (New) powers address suggestions. Set `GOOGLE_PLACES_API_KEY` for autocomplete.
 - **Apartment/condo handling**: When a multi-unit property is detected, a required "Unit / Apt #" field appears. Validation blocks submission if unit is missing.
 - **Calculator integration**: `/api/calculate` proxies to the calculator backend with authenticated service-to-service calls.
-- **Cloud Run deployment**: Live at `https://property-tax-frontend-965120872458.us-central1.run.app` (requires authentication due to org policy).
+- **Cloud Run deployment**: Live at `https://property-tax-frontend-965120872458.us-central1.run.app` (publicly accessible).
