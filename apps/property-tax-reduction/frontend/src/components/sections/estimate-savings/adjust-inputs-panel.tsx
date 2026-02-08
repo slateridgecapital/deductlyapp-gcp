@@ -49,52 +49,6 @@ export function AdjustInputsPanel({
 }: AdjustInputsPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed on mobile
 
-  if (isLoading) {
-    return (
-      <section>
-        <Card className="shadow-sm rounded-sm border-slate-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-            <div className="flex items-center gap-2">
-              <Settings2 className="h-4 w-4 text-slate-600" />
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-700">
-                Adjust inputs
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="md:hidden p-1 hover:bg-slate-100 rounded transition-colors"
-              aria-label={isCollapsed ? "Expand adjust inputs" : "Collapse adjust inputs"}
-            >
-              {isCollapsed ? (
-                <ChevronDown className="h-5 w-5 text-slate-600" />
-              ) : (
-                <ChevronUp className="h-5 w-5 text-slate-600" />
-              )}
-            </button>
-          </CardHeader>
-          <CardContent className={`space-y-4 ${isCollapsed ? "hidden md:block" : "block"}`}>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-11 w-full" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-11 w-full" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-11 w-full" />
-            </div>
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Skeleton className="h-8 w-16" />
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-    );
-  }
-
   const [assessedInput, setAssessedInput] = useState(formatNumber(assessedValue));
   const [marketInput, setMarketInput] = useState(formatNumber(marketValue));
   const [taxRateInput, setTaxRateInput] = useState(
@@ -213,6 +167,52 @@ export function AdjustInputsPanel({
     setTaxRateError(null);
     onResetToEstimate();
   };
+
+  if (isLoading) {
+    return (
+      <section>
+        <Card className="shadow-sm rounded-sm border-slate-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+            <div className="flex items-center gap-2">
+              <Settings2 className="h-4 w-4 text-slate-600" />
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-700">
+                Adjust inputs
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="md:hidden p-1 hover:bg-slate-100 rounded transition-colors"
+              aria-label={isCollapsed ? "Expand adjust inputs" : "Collapse adjust inputs"}
+            >
+              {isCollapsed ? (
+                <ChevronDown className="h-5 w-5 text-slate-600" />
+              ) : (
+                <ChevronUp className="h-5 w-5 text-slate-600" />
+              )}
+            </button>
+          </CardHeader>
+          <CardContent className={`space-y-4 ${isCollapsed ? "hidden md:block" : "block"}`}>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-11 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-11 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-11 w-full" />
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Skeleton className="h-8 w-16" />
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    );
+  }
 
   return (
     <section>
