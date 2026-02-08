@@ -182,7 +182,7 @@ export function HeroSection() {
         </h1>
 
         {/* Subheadline */}
-        <p className="mx-auto mb-10 max-w-2xl text-base text-slate-600 md:text-lg">
+        <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-600">
           Within seconds, we compare your tax assessment to today&apos;s market to see if you could lower your taxes.
         </p>
 
