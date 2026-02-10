@@ -51,6 +51,7 @@ export function HeroSection() {
     if (selectedFromAutocomplete && value.trim() !== inputAddress.trim()) {
       setSelectedFromAutocomplete(false);
       setNeedsUnit(false);
+      setUnitNumber("");
     }
     fetchSuggestions(value);
   };
@@ -62,6 +63,9 @@ export function HeroSection() {
       setInputAddress(result.cleanAddress || result.formattedAddress);
       setCleanAddress(result.cleanAddress);
       setNeedsUnit(result.needsUnit);
+      if (!result.needsUnit) {
+        setUnitNumber("");
+      }
       setSelectedFromAutocomplete(true);
       clearSuggestions();
       resetSessionToken();
@@ -129,7 +133,7 @@ export function HeroSection() {
     setIsNavigating(true);
     const params = new URLSearchParams();
     params.set("address", addressToUse);
-    if (unitNumber.trim()) {
+    if (needsUnit && unitNumber.trim()) {
       params.set("apt", unitNumber.trim());
     }
     router.push(`/estimate?${params.toString()}`);

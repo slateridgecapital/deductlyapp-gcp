@@ -79,6 +79,7 @@ export function AddressLookupCard({
     if (selectedFromAutocomplete && value.trim() !== address.trim()) {
       setSelectedFromAutocomplete(false);
       setNeedsUnit(false);
+      setUnitNumber("");
     }
     fetchSuggestions(value);
   };
@@ -91,6 +92,9 @@ export function AddressLookupCard({
       setInputAddress(result.cleanAddress || result.formattedAddress);
       setCleanAddress(result.cleanAddress); // Store clean address for API calls
       setNeedsUnit(result.needsUnit);
+      if (!result.needsUnit) {
+        setUnitNumber("");
+      }
       setSelectedFromAutocomplete(true);
       clearSuggestions();
       resetSessionToken();
@@ -157,7 +161,8 @@ export function AddressLookupCard({
 
     // Use cleanAddress (without building name) for API, not the display address
     const addressToUse = selectedFromAutocomplete ? cleanAddress : trimmed;
-    const fullAddress = buildFullAddress(addressToUse, unitNumber);
+    const unitToUse = needsUnit ? unitNumber : "";
+    const fullAddress = buildFullAddress(addressToUse, unitToUse);
     // Pass both: full address (with unit) for the API, base address for display
     onLookup(fullAddress, addressToUse);
   };
