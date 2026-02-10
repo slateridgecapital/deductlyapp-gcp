@@ -105,7 +105,7 @@ npx shadcn@latest add [component-name]
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GOOGLE_PLACES_API_KEY` | Yes | Google Places API (New) key for address autocomplete. Create in [Google Cloud Console](https://console.cloud.google.com/apis/credentials). Enable Places API (New). |
+| `GOOGLE_PLACES_API_KEY` | Yes | Google Maps Platform API key. Enable **Places API (New)** (autocomplete) and **Address Validation API** (multi-unit detection). Create in [Google Cloud Console](https://console.cloud.google.com/apis/credentials). |
 | `CALCULATOR_URL` | Yes (production) | URL of the calculator Cloud Function backend. Defaults to `http://localhost:8080` for local dev. |
 
 Copy `.env.example` to `.env.local` and add your API keys for local development.

@@ -26,13 +26,13 @@ export function Footer() {
               href="#terms"
               className="text-sm text-slate-400 transition-colors hover:text-white"
             >
-              Terms of Service
+              Terms of Use
             </a>
             <a
-              href="#security"
+              href="#about"
               className="text-sm text-slate-400 transition-colors hover:text-white"
             >
-              Security
+              About
             </a>
           </nav>
 

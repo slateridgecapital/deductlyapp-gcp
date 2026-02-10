@@ -61,7 +61,7 @@ export function Header() {
             className="text-sm text-slate-600 transition-colors hover:text-slate-900"
             onClick={(e) => handleSmoothScroll(e, "how-it-works")}
           >
-            How this works
+            How This Works
           </a>
           <a
             href="/#testimonials"
@@ -70,11 +70,21 @@ export function Header() {
           >
             Testimonials
           </a>
+          <a
+            href="/#about"
+            className="text-sm text-slate-600 transition-colors hover:text-slate-900"
+            onClick={(e) => handleSmoothScroll(e, "about")}
+          >
+            About
+          </a>
         </nav>
 
         {/* CTA */}
-        <Link href="/estimate" className="cursor-pointer hidden md:block">
-          <Button className="bg-slate-900 text-white hover:bg-slate-800 cursor-pointer">
+        <Link
+          href="/estimate"
+          className="hidden md:inline-flex cursor-pointer"
+        >
+          <Button size="sm" className="cursor-pointer">
             Estimate Savings
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

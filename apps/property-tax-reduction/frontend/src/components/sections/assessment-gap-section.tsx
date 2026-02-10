@@ -62,7 +62,7 @@ export function AssessmentGapSection() {
 
             {/* Title */}
             <h2 className="mb-4 text-[30px] font-bold text-slate-900 lg:text-4xl">
-              How this works
+              How This Works
             </h2>
 
             {/* Process Steps */}

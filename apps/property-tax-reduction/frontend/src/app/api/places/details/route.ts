@@ -2,50 +2,62 @@ import { NextRequest, NextResponse } from "next/server";
 
 const GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY;
 const PLACES_BASE_URL = "https://places.googleapis.com/v1/places";
+const ADDRESS_VALIDATION_URL =
+  "https://addressvalidation.googleapis.com/v1:validateAddress";
+
+export interface PlaceDetailsResult {
+  formattedAddress: string;
+  needsUnit: boolean;
+  cleanAddress?: string; // Address without building name, suitable for Zillow
+}
+
+type AddressComponentLike = {
+  componentType?: string;
+  componentName?: { text?: string };
+  component_type?: string;
+  component_name?: { text?: string };
+};
 
 /**
- * Build a clean address from Google Places address components
- * Excludes building/establishment names, only includes street-level components
+ * Build a clean address from Address Validation API address components.
  * Format: "123 Main St, City, State ZIP"
+ * Handles both camelCase and snake_case (REST JSON can vary).
  */
-function buildCleanAddress(addressComponents: any[]): string {
+function buildCleanAddressFromComponents(
+  addressComponents: AddressComponentLike[]
+): string {
   const components: Record<string, string> = {};
-  
-  // Extract relevant components
-  for (const component of addressComponents) {
-    const types = component.types || [];
-    const longText = component.longText || "";
-    const shortText = component.shortText || "";
-    
-    if (types.includes("street_number")) {
-      components.streetNumber = longText;
-    } else if (types.includes("route")) {
-      components.route = longText;
-    } else if (types.includes("locality")) {
-      components.city = longText;
-    } else if (types.includes("administrative_area_level_1")) {
-      components.state = shortText; // Use short form (e.g., "CA" not "California")
-    } else if (types.includes("postal_code")) {
-      components.zipCode = longText;
+
+  for (const component of addressComponents ?? []) {
+    const type =
+      component.componentType ??
+      (component as { component_type?: string }).component_type ??
+      "";
+    const name = component.componentName ?? (component as { component_name?: { text?: string } }).component_name;
+    const text = name?.text ?? "";
+
+    if (type === "street_number") {
+      components.streetNumber = text;
+    } else if (type === "route") {
+      components.route = text;
+    } else if (type === "locality") {
+      components.city = text;
+    } else if (type === "administrative_area_level_1") {
+      components.state = text;
+    } else if (type === "postal_code") {
+      components.zipCode = text;
     }
   }
-  
-  // Build address parts (street, city, state+zip)
+
   const parts: string[] = [];
-  
-  // Street address
   if (components.streetNumber && components.route) {
     parts.push(`${components.streetNumber} ${components.route}`);
   } else if (components.route) {
     parts.push(components.route);
   }
-  
-  // City
   if (components.city) {
     parts.push(components.city);
   }
-  
-  // State and ZIP
   if (components.state && components.zipCode) {
     parts.push(`${components.state} ${components.zipCode}`);
   } else if (components.state) {
@@ -53,14 +65,8 @@ function buildCleanAddress(addressComponents: any[]): string {
   } else if (components.zipCode) {
     parts.push(components.zipCode);
   }
-  
-  return parts.join(", ");
-}
 
-export interface PlaceDetailsResult {
-  formattedAddress: string;
-  needsUnit: boolean;
-  cleanAddress?: string; // Address without building name, suitable for Zillow
+  return parts.join(", ");
 }
 
 export async function POST(request: NextRequest) {
@@ -97,24 +103,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const url = new URL(`${PLACES_BASE_URL}/${placeId}`);
+    // Step 1: Get formatted address from Places API (minimal fields)
+    const placesUrl = new URL(`${PLACES_BASE_URL}/${placeId}`);
     if (sessionToken) {
-      url.searchParams.set("sessionToken", sessionToken);
+      placesUrl.searchParams.set("sessionToken", sessionToken);
     }
 
-    const response = await fetch(url.toString(), {
+    const placesResponse = await fetch(placesUrl.toString(), {
       method: "GET",
       headers: {
         "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
-        "X-Goog-FieldMask": "formattedAddress,addressComponents,types",
+        "X-Goog-FieldMask": "formattedAddress",
       },
     });
 
-    const data = await response.json();
+    const placesData = await placesResponse.json();
 
-    if (!response.ok) {
+    if (!placesResponse.ok) {
       const message =
-        data?.error?.message ?? "Place details request failed";
+        placesData?.error?.message ?? "Place details request failed";
       return NextResponse.json(
         {
           success: false,
@@ -123,46 +130,88 @@ export async function POST(request: NextRequest) {
             message,
           },
         },
-        { status: response.status >= 400 ? response.status : 500 }
+        { status: placesResponse.status >= 400 ? placesResponse.status : 500 }
       );
     }
 
     const formattedAddress =
-      data?.formattedAddress ?? "";
-    const addressComponents = data?.addressComponents ?? [];
-    const types: string[] = Array.isArray(data?.types) ? data.types : [];
+      typeof placesData?.formattedAddress === "string"
+        ? placesData.formattedAddress
+        : "";
 
-    // Build clean address (without building name) for Zillow API
-    const cleanAddress = buildCleanAddress(addressComponents);
-
-    // Check if address already has a subpremise (unit) component
-    const hasSubpremise = addressComponents.some(
-      (c: { types?: string[] }) =>
-        Array.isArray(c?.types) && c.types.includes("subpremise")
-    );
-
-    // Multi-unit indicators: premise without subpremise, or address text hints
-    const multiUnitTypes = ["premise", "subpremise", "establishment"];
-    const hasMultiUnitType = types.some((t: string) =>
-      multiUnitTypes.includes(t)
-    );
-    const addressLower = formattedAddress.toLowerCase();
-    const hasAptKeywords =
-      /\b(apt|apartment|unit|suite|ste|#|condo|condominium)\b/i.test(
-        addressLower
+    if (!formattedAddress) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "DETAILS_ERROR",
+            message: "No address returned for place.",
+          },
+        },
+        { status: 502 }
       );
+    }
 
-    // needsUnit: true if we detected a multi-unit building but no subpremise
+    // Step 2: Validate address with Address Validation API to get needsUnit
+    const validationBody = {
+      address: {
+        regionCode: "US",
+        addressLines: [formattedAddress],
+      },
+      ...(sessionToken && { sessionToken }),
+    };
+
+    const validationResponse = await fetch(
+      `${ADDRESS_VALIDATION_URL}?key=${GOOGLE_PLACES_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(validationBody),
+      }
+    );
+
+    const validationData = await validationResponse.json();
+
+    if (!validationResponse.ok) {
+      const message =
+        validationData?.error?.message ?? "Address validation request failed";
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "VALIDATION_ERROR",
+            message,
+          },
+        },
+        {
+          status:
+            validationResponse.status >= 400 ? validationResponse.status : 500,
+        }
+      );
+    }
+
+    const result = validationData?.result;
+    const verdict = result?.verdict;
+    const address = result?.address;
+
     const needsUnit =
-      !hasSubpremise &&
-      (hasMultiUnitType || hasAptKeywords);
+      verdict?.possibleNextAction === "CONFIRM_ADD_SUBPREMISES";
+
+    const validatedFormatted =
+      address?.formattedAddress ?? formattedAddress;
+    const addressComponents =
+      address?.addressComponents ?? (address as { address_components?: AddressComponentLike[] })?.address_components ?? [];
+    const cleanAddress =
+      addressComponents.length > 0
+        ? buildCleanAddressFromComponents(addressComponents)
+        : formattedAddress;
 
     return NextResponse.json({
       success: true,
       data: {
-        formattedAddress,
+        formattedAddress: validatedFormatted,
         needsUnit,
-        cleanAddress, // Clean address for Zillow API
+        cleanAddress: cleanAddress || validatedFormatted,
       } satisfies PlaceDetailsResult,
     });
   } catch (err) {
