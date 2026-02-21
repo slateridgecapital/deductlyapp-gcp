@@ -223,7 +223,7 @@ export function HeroSection() {
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
                     onBlur={handleBlur}
-                    placeholder="Enter address..."
+                    placeholder="Enter address"
                     className="h-12 text-base"
                     disabled={isNavigating}
                     autoComplete="off"

@@ -3,14 +3,14 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
 const STEPS: { label: string; targetPercent: number; atTimeMs: number }[] = [
-  { label: "Validating address...", targetPercent: 8, atTimeMs: 0 },
-  { label: "Searching property records...", targetPercent: 18, atTimeMs: 1500 },
-  { label: "Retrieving tax assessment history...", targetPercent: 32, atTimeMs: 5000 },
-  { label: "Pulling current market data...", targetPercent: 48, atTimeMs: 10000 },
-  { label: "Analyzing comparable properties...", targetPercent: 62, atTimeMs: 16000 },
-  { label: "Calculating tax rate...", targetPercent: 76, atTimeMs: 22000 },
-  { label: "Computing potential savings...", targetPercent: 88, atTimeMs: 26000 },
-  { label: "Finalizing your estimate...", targetPercent: 96, atTimeMs: 29000 },
+  { label: "Validating address", targetPercent: 8, atTimeMs: 0 },
+  { label: "Searching property records", targetPercent: 18, atTimeMs: 1500 },
+  { label: "Retrieving tax assessment history", targetPercent: 32, atTimeMs: 5000 },
+  { label: "Pulling current market data", targetPercent: 48, atTimeMs: 10000 },
+  { label: "Analyzing comparable properties", targetPercent: 62, atTimeMs: 16000 },
+  { label: "Calculating tax rate", targetPercent: 76, atTimeMs: 22000 },
+  { label: "Computing potential savings", targetPercent: 88, atTimeMs: 26000 },
+  { label: "Finalizing your estimate", targetPercent: 96, atTimeMs: 29000 },
 ];
 
 const TOTAL_STEPS = STEPS.length;

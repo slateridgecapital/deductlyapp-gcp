@@ -10,14 +10,6 @@ import { AddressLookupCard } from "./address-lookup-card";
 import { DiyAppealGuideSection } from "./diy-appeal-guide-section";
 import { FormulaBreakdownSection } from "./formula-breakdown-section";
 import { TrustDisclaimerSection } from "./trust-disclaimer-section";
-import { AssessmentRequestForm } from "./assessment-request-section";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 function buildFullAddress(baseAddress: string, unitNumber: string): string {
   const trimmed = baseAddress.trim();
@@ -96,13 +88,6 @@ async function fetchAddressLookup(address: string): Promise<PropertyData> {
   };
 }
 
-const COUNTY_DATA = {
-  address: "123 Main St, Austin, TX 78701",
-  assessedValue: 1_000_000,
-  marketValue: 750_000,
-  taxRatePercent: 1.88,
-};
-
 const OUR_ESTIMATE = {
   address: "123 Main St, Austin, TX 78701",
   assessedValue: 1_000_000,
@@ -129,7 +114,6 @@ export function EstimateSavingsPage() {
   const [resetKey, setResetKey] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
   const [unitNumber, setUnitNumber] = useState("");
   const hasAutoLookedUpRef = useRef(false);
 
@@ -324,29 +308,6 @@ export function EstimateSavingsPage() {
         taxRatePercent={taxRatePercent}
         estimatedSavings={estimatedSavings}
       />
-
-      <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Get a personalized plan</DialogTitle>
-            <DialogDescription>
-              Leave your details and we&apos;ll put together a personalized plan. We will reach back out to walk through it together.
-            </DialogDescription>
-          </DialogHeader>
-          <AssessmentRequestForm
-            address={address}
-            initialApt={searchParams.get("apt") || unitNumber}
-            assessedValue={assessedValue}
-            marketValue={marketValue}
-            taxRatePercent={taxRatePercent}
-            estimatedSavings={estimatedSavings}
-            onSubmitSuccess={() => {
-              setIsRequestDialogOpen(false);
-              router.push("/estimate/confirmation");
-            }}
-          />
-        </DialogContent>
-      </Dialog>
 
       <FormulaBreakdownSection
         assessedValue={assessedValue}
