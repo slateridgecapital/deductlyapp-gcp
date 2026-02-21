@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useProgressSteps } from "@/hooks/use-progress-steps";
 import { ResultHeadlineSection } from "./result-headline-section";
 import { ValueComparisonSection } from "./value-comparison-section";
@@ -9,6 +9,14 @@ import { AdjustInputsPanel } from "./adjust-inputs-panel";
 import { AddressLookupCard } from "./address-lookup-card";
 import { FormulaBreakdownSection } from "./formula-breakdown-section";
 import { TrustDisclaimerSection } from "./trust-disclaimer-section";
+import { AssessmentRequestForm } from "./assessment-request-section";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 function buildFullAddress(baseAddress: string, unitNumber: string): string {
   const trimmed = baseAddress.trim();
@@ -20,6 +28,20 @@ function buildFullAddress(baseAddress: string, unitNumber: string): string {
   );
   if (filtered.length <= 1) return `${filtered[0]} #${unit}`;
   return [filtered[0] + ` #${unit}`, ...filtered.slice(1)].join(", ");
+}
+
+function parseAddressWithUnit(fullAddress: string): { base: string; unit: string } {
+  const trimmed = fullAddress.trim();
+  const unitMatch = trimmed.match(/#\s*([^,]+)/);
+  if (unitMatch) {
+    const unit = unitMatch[1].trim();
+    const base = trimmed
+      .replace(/\s*#\s*[^,]+/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    return { base: base || trimmed, unit };
+  }
+  return { base: trimmed, unit: "" };
 }
 
 interface PropertyData {
@@ -96,6 +118,7 @@ interface PreviousValues {
 
 export function EstimateSavingsPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [address, setAddress] = useState("");
   const [assessedValue, setAssessedValue] = useState(OUR_ESTIMATE.assessedValue);
   const [marketValue, setMarketValue] = useState(OUR_ESTIMATE.marketValue);
@@ -105,6 +128,8 @@ export function EstimateSavingsPage() {
   const [resetKey, setResetKey] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+  const [unitNumber, setUnitNumber] = useState("");
   const hasAutoLookedUpRef = useRef(false);
 
   const previousValuesRef = useRef<PreviousValues>({
@@ -130,6 +155,8 @@ export function EstimateSavingsPage() {
   const handleAddressLookup = useCallback(
     async (lookupAddress: string, displayAddress?: string) => {
       const display = displayAddress ?? lookupAddress;
+      const parsed = parseAddressWithUnit(lookupAddress);
+      setUnitNumber(parsed.unit);
       previousValuesRef.current = {
         address,
         assessedValue,
@@ -184,7 +211,9 @@ export function EstimateSavingsPage() {
       taxRatePercent: data.taxRatePercent,
     };
 
+    const parsed = parseAddressWithUnit(lastLookupAddressRef.current);
     setAddress(displayAddress);
+    setUnitNumber(parsed.unit);
     setAssessedValue(data.assessedValue);
     setMarketValue(data.marketValue);
     setTaxRatePercent(data.taxRatePercent);
@@ -201,10 +230,10 @@ export function EstimateSavingsPage() {
     if (addressParam?.trim()) {
       hasAutoLookedUpRef.current = true;
       const base = addressParam.trim();
-      setAddress(base); // Populate address field immediately so both fields display
-      const fullAddress = aptParam?.trim()
-        ? buildFullAddress(base, aptParam.trim())
-        : base;
+      const apt = aptParam?.trim() || "";
+      setAddress(base);
+      setUnitNumber(apt);
+      const fullAddress = apt ? buildFullAddress(base, apt) : base;
       handleAddressLookup(fullAddress, base);
     }
   }, [searchParams, handleAddressLookup]);
@@ -258,7 +287,7 @@ export function EstimateSavingsPage() {
         <div className="lg:col-span-1 space-y-6">
           <AddressLookupCard
             address={address}
-            initialApt={searchParams.get("apt") || ""}
+            initialApt={searchParams.get("apt") || unitNumber}
             isLoading={isLoading}
             onLookup={handleAddressLookup}
             error={error}
@@ -276,7 +305,7 @@ export function EstimateSavingsPage() {
             onResetToEstimate={handleResetToEstimate}
           />
         </div>
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <ValueComparisonSection
             assessedValue={assessedValue}
             marketValue={marketValue}
@@ -284,9 +313,33 @@ export function EstimateSavingsPage() {
             marketTaxes={marketTaxes}
             taxRatePercent={taxRatePercent}
             isLoading={isLoading}
+            onRequestAssessment={() => setIsRequestDialogOpen(true)}
           />
         </div>
       </div>
+
+      <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Get a personalized plan</DialogTitle>
+            <DialogDescription>
+              Leave your details and we&apos;ll put together a personalized plan. We will reach back out to walk through it together.
+            </DialogDescription>
+          </DialogHeader>
+          <AssessmentRequestForm
+            address={address}
+            initialApt={searchParams.get("apt") || unitNumber}
+            assessedValue={assessedValue}
+            marketValue={marketValue}
+            taxRatePercent={taxRatePercent}
+            estimatedSavings={estimatedSavings}
+            onSubmitSuccess={() => {
+              setIsRequestDialogOpen(false);
+              router.push("/estimate/confirmation");
+            }}
+          />
+        </DialogContent>
+      </Dialog>
 
       <FormulaBreakdownSection
         assessedValue={assessedValue}

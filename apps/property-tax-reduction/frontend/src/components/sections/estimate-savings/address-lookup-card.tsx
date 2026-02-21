@@ -52,6 +52,8 @@ export function AddressLookupCard({
     useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed on mobile
+  const [lastSubmittedBase, setLastSubmittedBase] = useState<string | null>(null);
+  const [lastSubmittedUnit, setLastSubmittedUnit] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -71,6 +73,11 @@ export function AddressLookupCard({
     setInputAddress(address);
     setCleanAddress(address);
   }, [address]);
+
+  useEffect(() => {
+    setUnitNumber(initialApt);
+    setNeedsUnit(!!initialApt);
+  }, [initialApt]);
 
   const handleInputChange = (value: string) => {
     setInputAddress(value);
@@ -162,10 +169,21 @@ export function AddressLookupCard({
     // Use cleanAddress (without building name) for API, not the display address
     const addressToUse = selectedFromAutocomplete ? cleanAddress : trimmed;
     const unitToUse = needsUnit ? unitNumber : "";
+    setLastSubmittedBase(addressToUse);
+    setLastSubmittedUnit(unitToUse);
     const fullAddress = buildFullAddress(addressToUse, unitToUse);
     // Pass both: full address (with unit) for the API, base address for display
     onLookup(fullAddress, addressToUse);
   };
+
+  const currentBase = selectedFromAutocomplete ? cleanAddress : inputAddress.trim();
+  const currentUnit = needsUnit ? unitNumber : "";
+  const noChangesSinceSubmit =
+    lastSubmittedBase !== null &&
+    lastSubmittedBase === currentBase &&
+    lastSubmittedUnit === currentUnit;
+  const isButtonDisabled =
+    isLoading || (noChangesSinceSubmit && !error);
 
   return (
     <section>
@@ -299,7 +317,7 @@ export function AddressLookupCard({
               size="default"
               className="h-12 w-full cursor-pointer"
               onClick={handleSubmit}
-              disabled={isLoading}
+              disabled={isButtonDisabled}
             >
               {isLoading ? (
                 <>

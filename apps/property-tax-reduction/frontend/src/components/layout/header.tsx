@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TrendingDown, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
+import { TrendingDown } from "lucide-react";
 export function Header() {
   const pathname = usePathname();
 
@@ -79,16 +77,6 @@ export function Header() {
           </a>
         </nav>
 
-        {/* CTA */}
-        <Link
-          href="/estimate"
-          className="hidden md:inline-flex cursor-pointer"
-        >
-          <Button size="sm" className="cursor-pointer">
-            Estimate Savings
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </Link>
       </div>
     </header>
   );
