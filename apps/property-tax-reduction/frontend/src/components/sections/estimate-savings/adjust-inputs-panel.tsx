@@ -182,7 +182,7 @@ export function AdjustInputsPanel({
             <button
               type="button"
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="md:hidden p-1 hover:bg-slate-100 rounded transition-colors"
+              className="p-1 hover:bg-slate-100 rounded transition-colors"
               aria-label={isCollapsed ? "Expand adjust inputs" : "Collapse adjust inputs"}
             >
               {isCollapsed ? (
@@ -192,7 +192,7 @@ export function AdjustInputsPanel({
               )}
             </button>
           </CardHeader>
-          <CardContent className={`space-y-4 ${isCollapsed ? "hidden md:block" : "block"}`}>
+          <CardContent className={`space-y-4 ${isCollapsed ? "hidden" : "block"}`}>
             <div className="space-y-2">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-11 w-full" />
@@ -227,7 +227,7 @@ export function AdjustInputsPanel({
           <button
             type="button"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="md:hidden p-1 hover:bg-slate-100 rounded transition-colors"
+            className="p-1 hover:bg-slate-100 rounded transition-colors"
             aria-label={isCollapsed ? "Expand adjust inputs" : "Collapse adjust inputs"}
           >
             {isCollapsed ? (
@@ -237,7 +237,7 @@ export function AdjustInputsPanel({
             )}
           </button>
         </CardHeader>
-        <CardContent className={`space-y-4 ${isCollapsed ? "hidden md:block" : "block"}`}>
+        <CardContent className={`space-y-4 ${isCollapsed ? "hidden" : "block"}`}>
           <div className="space-y-2">
             <Label htmlFor="assessed">County Assessed Value</Label>
             <div className="relative">

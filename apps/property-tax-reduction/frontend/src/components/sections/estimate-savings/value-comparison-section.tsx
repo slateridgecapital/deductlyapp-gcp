@@ -1,10 +1,9 @@
 "use client";
 
-import { ClipboardCheck } from "lucide-react";
+import { Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 
 interface ValueComparisonSectionProps {
   assessedValue: number;
@@ -13,7 +12,6 @@ interface ValueComparisonSectionProps {
   marketTaxes: number;
   taxRatePercent: number;
   isLoading?: boolean;
-  onRequestAssessment?: () => void;
 }
 
 export function ValueComparisonSection({
@@ -23,15 +21,14 @@ export function ValueComparisonSection({
   marketTaxes,
   taxRatePercent,
   isLoading = false,
-  onRequestAssessment,
 }: ValueComparisonSectionProps) {
   if (isLoading) {
     return (
       <section>
-        <Card className="shadow-sm rounded-sm border-slate-200">
+        <Card className="shadow-sm rounded-sm border-slate-200 gap-2">
           <CardHeader>
             <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
-              <ClipboardCheck className="h-4 w-4" />
+              <Calculator className="h-4 w-4" />
               Valuation Comparison
             </span>
           </CardHeader>
@@ -80,10 +77,10 @@ export function ValueComparisonSection({
 
   return (
     <section>
-      <Card className="shadow-sm rounded-sm border-slate-200">
+      <Card className="shadow-sm rounded-sm border-slate-200 gap-2">
         <CardHeader>
           <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
-            <ClipboardCheck className="h-4 w-4" />
+            <Calculator className="h-4 w-4" />
             Valuation Comparison
           </span>
         </CardHeader>
@@ -141,10 +138,9 @@ export function ValueComparisonSection({
                   No savings found
                 </span>
               ) : (
-                <span className="font-semibold text-emerald-600">
-                  up to $
-                  {Math.round(Math.max(0, assessedTaxes - marketTaxes)).toLocaleString('en-US')}{" "}
-                  <span className="md:hidden">/ yr</span><span className="hidden md:inline">/ year</span>
+                <span className="font-semibold text-slate-900">
+                  up to <span className="text-emerald-600">${Math.round(Math.max(0, assessedTaxes - marketTaxes)).toLocaleString('en-US')}{" "}
+                  <span className="md:hidden">/ yr</span><span className="hidden md:inline">/ year</span></span>
                 </span>
               )}
             </div>
@@ -153,24 +149,11 @@ export function ValueComparisonSection({
               {Math.round(Math.max(0, assessedTaxes - marketTaxes)) === 0 ? (
                 <span className="font-semibold text-slate-900">—</span>
               ) : (
-                <span className="font-semibold text-emerald-600">
-                  up to {((Math.max(0, assessedTaxes - marketTaxes) / assessedTaxes) * 100).toFixed(1)}%
+                <span className="font-semibold text-slate-900">
+                  up to <span className="text-emerald-600">{((Math.max(0, assessedTaxes - marketTaxes) / assessedTaxes) * 100).toFixed(1)}%</span>
                 </span>
               )}
             </div>
-            {onRequestAssessment && (
-              <div className="mt-4 pt-4 border-t border-slate-200 flex justify-end">
-                <Button
-                  variant="default"
-                  size="default"
-                  onClick={onRequestAssessment}
-                  className="h-12 w-full text-base cursor-pointer"
-                >
-                  <ClipboardCheck className="mr-2 h-4 w-4" />
-                  Get a personalized plan
-                </Button>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>

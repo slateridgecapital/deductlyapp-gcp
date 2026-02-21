@@ -7,6 +7,7 @@ import { ResultHeadlineSection } from "./result-headline-section";
 import { ValueComparisonSection } from "./value-comparison-section";
 import { AdjustInputsPanel } from "./adjust-inputs-panel";
 import { AddressLookupCard } from "./address-lookup-card";
+import { DiyAppealGuideSection } from "./diy-appeal-guide-section";
 import { FormulaBreakdownSection } from "./formula-breakdown-section";
 import { TrustDisclaimerSection } from "./trust-disclaimer-section";
 import { AssessmentRequestForm } from "./assessment-request-section";
@@ -270,7 +271,7 @@ export function EstimateSavingsPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-16 md:py-24">
+    <div className="container mx-auto max-w-7xl px-4 py-8 md:py-16">
       <ResultHeadlineSection
         hasSavings={hasSavings}
         estimatedSavings={estimatedSavings}
@@ -283,7 +284,7 @@ export function EstimateSavingsPage() {
       />
 
       {/* Side-by-side layout for comparison and inputs */}
-      <div className="mb-12 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-6">
           <AddressLookupCard
             address={address}
@@ -313,10 +314,16 @@ export function EstimateSavingsPage() {
             marketTaxes={marketTaxes}
             taxRatePercent={taxRatePercent}
             isLoading={isLoading}
-            onRequestAssessment={() => setIsRequestDialogOpen(true)}
           />
         </div>
       </div>
+
+      <DiyAppealGuideSection
+        assessedValue={assessedValue}
+        marketValue={marketValue}
+        taxRatePercent={taxRatePercent}
+        estimatedSavings={estimatedSavings}
+      />
 
       <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
         <DialogContent>

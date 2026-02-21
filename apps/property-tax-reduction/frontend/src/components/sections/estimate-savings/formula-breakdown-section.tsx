@@ -31,7 +31,7 @@ export function FormulaBreakdownSection({
 }: FormulaBreakdownSectionProps) {
   if (isLoading) {
     return (
-      <section className="mb-12">
+      <section className="mb-8">
         <Card className="bg-slate-50/80 shadow-sm rounded-sm border-slate-200">
           <CardHeader className="flex flex-row items-center gap-2">
             <Calculator className="h-4 w-4 text-slate-600" />
@@ -64,7 +64,7 @@ export function FormulaBreakdownSection({
   const savingsRounded = Math.round(estimatedSavings);
 
   return (
-    <section className="mb-12">
+    <section className="mb-8">
       <Card className="bg-slate-50/80 shadow-sm rounded-sm border-slate-200">
         <CardHeader className="flex flex-row items-center gap-2">
           <Calculator className="h-4 w-4 text-slate-600" />

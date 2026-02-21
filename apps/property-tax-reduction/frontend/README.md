@@ -138,6 +138,25 @@ Copy `.env.example` to `.env.local` and add your API keys for local development.
 - Tokens are cached for 1 hour with a 5-minute refresh buffer
 - Organization policy requires all Cloud Run/Function access to be authenticated
 
+### Local auth for prod backend
+
+The org policy `constraints/iam.disableServiceAccountKeyCreation` blocks service account key files. Use ADC with impersonation instead (one-time setup):
+
+```bash
+# 1. Grant yourself Token Creator on the local dev service account (one-time)
+gcloud iam service-accounts add-iam-policy-binding \
+  property-tax-frontend-local@deductlyapp.iam.gserviceaccount.com \
+  --member="user:YOUR_EMAIL@slateridgecapital.com" \
+  --role="roles/iam.serviceAccountTokenCreator" \
+  --project=deductlyapp
+
+# 2. Set up ADC with impersonation (re-run if credentials expire ~12h)
+gcloud auth application-default login \
+  --impersonate-service-account=property-tax-frontend-local@deductlyapp.iam.gserviceaccount.com
+```
+
+After this, `google-auth-library` picks up the ADC automatically. Do NOT set `GOOGLE_APPLICATION_CREDENTIALS` in `.env.local`.
+
 ## Deployment
 
 ### Prerequisites

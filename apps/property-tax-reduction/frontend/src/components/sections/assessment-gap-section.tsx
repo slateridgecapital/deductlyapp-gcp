@@ -164,14 +164,14 @@ export function AssessmentGapSection() {
                   </div>
                   <div className="mt-3 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Estimated Annual Savings</span>
-                    <span className="font-semibold text-emerald-600">
-                      up to ${Math.round(estimatedSavings).toLocaleString('en-US')} <span className="lg:hidden">/ yr</span><span className="hidden lg:inline">/ year</span>
+                    <span className="font-semibold text-slate-900">
+                      up to <span className="text-emerald-600">${Math.round(estimatedSavings).toLocaleString('en-US')} <span className="lg:hidden">/ yr</span><span className="hidden lg:inline">/ year</span></span>
                     </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Estimated Savings Percentage</span>
-                    <span className="font-semibold text-emerald-600">
-                      up to {((estimatedSavings / assessedTaxes) * 100).toFixed(1)}%
+                    <span className="font-semibold text-slate-900">
+                      up to <span className="text-emerald-600">{((estimatedSavings / assessedTaxes) * 100).toFixed(1)}%</span>
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 mt-3 italic">

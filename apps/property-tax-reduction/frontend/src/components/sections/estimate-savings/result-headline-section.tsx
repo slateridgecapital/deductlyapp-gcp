@@ -25,7 +25,7 @@ export function ResultHeadlineSection({
 }: ResultHeadlineSectionProps) {
   if (isLoading) {
     return (
-      <section className="mb-12 text-center">
+      <section className="mb-8 text-center">
         <h2 className="mb-4 text-lg font-medium text-slate-700">
           Analyzing your property
         </h2>
@@ -53,7 +53,7 @@ export function ResultHeadlineSection({
   }
 
   return (
-    <section className="mb-12 text-center">
+    <section className="mb-8 text-center">
       {hasSavings ? (
         <>
           <h1 className="mb-4 font-serif text-[28px] leading-tight tracking-[-1px] text-slate-900 lg:text-4xl">
@@ -64,9 +64,8 @@ export function ResultHeadlineSection({
             per year
           </h1>
           <p className="mx-auto max-w-xl text-base text-slate-600 lg:text-lg">
-            Based on current data, your property may be over-assessed compared
-            to today&apos;s market value. The estimate below shows what a
-            reduced assessment could mean for your annual tax bill.
+            Based on our analysis, you may be overpaying due to an inflated
+            assessment. Here&apos;s what a correction could save you each year.
           </p>
         </>
       ) : (
