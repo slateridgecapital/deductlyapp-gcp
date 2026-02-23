@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ListChecks, Loader2, CheckCircle2, ClipboardCheck } from "lucide-react";
+import { ChevronDown, ListChecks, Loader2, CheckCircle, CheckCircle2, ClipboardCheck } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -159,8 +159,8 @@ function LetUsTakeItForm({
       {isSuccess ? (
         <div className="mt-5 flex items-start gap-3 rounded-sm border border-emerald-200 bg-emerald-50 p-4">
           <div>
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-slate-600" />
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-700">
+              <CheckCircle className="h-3 w-3 shrink-0 text-emerald-700" />
               We&apos;ve got your info.
             </p>
             <p className="mt-1 text-sm text-slate-600">
