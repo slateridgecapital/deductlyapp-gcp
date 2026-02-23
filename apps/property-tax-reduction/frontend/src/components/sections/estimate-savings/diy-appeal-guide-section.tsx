@@ -15,6 +15,8 @@ interface DiyAppealGuideSectionProps {
   marketValue: number;
   taxRatePercent: number;
   estimatedSavings: number;
+  address: string;
+  unitNumber: string;
 }
 
 const STEPS = [
@@ -116,6 +118,8 @@ interface LetUsTakeItFormProps {
   marketValue: number;
   taxRatePercent: number;
   estimatedSavings: number;
+  address: string;
+  unitNumber: string;
   idSuffix: string;
 }
 
@@ -136,6 +140,8 @@ function LetUsTakeItForm({
   marketValue,
   taxRatePercent,
   estimatedSavings,
+  address,
+  unitNumber,
   idSuffix,
 }: LetUsTakeItFormProps) {
   return (
@@ -152,12 +158,12 @@ function LetUsTakeItForm({
 
       {isSuccess ? (
         <div className="mt-5 flex items-start gap-3 rounded-sm border border-emerald-200 bg-emerald-50 p-4">
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
           <div>
-            <p className="font-medium text-emerald-900">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-slate-600" />
               We&apos;ve got your info.
             </p>
-            <p className="mt-1 text-sm text-emerald-700">
+            <p className="mt-1 text-sm text-slate-600">
               We&apos;ll reach out shortly with a personalized plan. No
               filings or commitments until you&apos;re ready.
             </p>
@@ -192,7 +198,9 @@ function LetUsTakeItForm({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  address: trimmedZip,
+                  address,
+                  unitNumber,
+                  zipCode: trimmedZip,
                   name: trimmedName,
                   email: trimmedEmail,
                   assessedValue,
@@ -313,6 +321,8 @@ export function DiyAppealGuideSection({
   marketValue,
   taxRatePercent,
   estimatedSavings,
+  address,
+  unitNumber,
 }: DiyAppealGuideSectionProps) {
   const [zipCode, setZipCode] = useState("");
   const [name, setName] = useState("");
@@ -381,6 +391,8 @@ export function DiyAppealGuideSection({
               marketValue={marketValue}
               taxRatePercent={taxRatePercent}
               estimatedSavings={estimatedSavings}
+              address={address}
+              unitNumber={unitNumber}
               idSuffix="-lg"
             />
           </div>
@@ -401,11 +413,13 @@ export function DiyAppealGuideSection({
           setIsSubmitting={setIsSubmitting}
           isSuccess={isSuccess}
           setIsSuccess={setIsSuccess}
-          assessedValue={assessedValue}
-          marketValue={marketValue}
-          taxRatePercent={taxRatePercent}
-          estimatedSavings={estimatedSavings}
-          idSuffix=""
+              assessedValue={assessedValue}
+              marketValue={marketValue}
+              taxRatePercent={taxRatePercent}
+              estimatedSavings={estimatedSavings}
+              address={address}
+              unitNumber={unitNumber}
+              idSuffix=""
         />
       </div>
     </section>

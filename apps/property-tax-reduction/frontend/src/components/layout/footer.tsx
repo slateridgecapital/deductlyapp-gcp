@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 
 export function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300">
+    <footer className="bg-black text-slate-300">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           {/* Logo */}
@@ -18,26 +18,26 @@ export function Footer() {
           <nav className="flex items-center gap-6">
             <a
               href="#privacy"
-              className="text-sm text-slate-400 transition-colors hover:text-white"
+              className="text-sm text-primary-foreground transition-colors hover:opacity-90"
             >
               Privacy Policy
             </a>
             <a
               href="#terms"
-              className="text-sm text-slate-400 transition-colors hover:text-white"
+              className="text-sm text-primary-foreground transition-colors hover:opacity-90"
             >
               Terms of Use
             </a>
             <a
               href="#about"
-              className="text-sm text-slate-400 transition-colors hover:text-white"
+              className="text-sm text-primary-foreground transition-colors hover:opacity-90"
             >
               About
             </a>
           </nav>
 
           {/* Disclaimer */}
-          <p className="max-w-xs text-right text-xs text-slate-500">
+          <p className="max-w-xs text-right text-xs text-primary-foreground">
             © 2026 deductly.
           </p>
         </div>
