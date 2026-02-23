@@ -199,13 +199,12 @@ export function HeroSection() {
                 Property Search
               </span>
             </div>
-            <Badge
-              variant="secondary"
-              className="bg-emerald-50 text-emerald-700 hidden lg:inline-flex"
-            >
-              <CheckCircle className="mr-1 h-3 w-3" />
-              Saved $100k+ in taxes so far
-            </Badge>
+            <span className="hidden md:inline-flex" aria-hidden="true">
+              <Badge variant="secondary" className="bg-emerald-50 text-emerald-700">
+                <CheckCircle className="mr-1 h-3 w-3" />
+                Saved $100k+ in taxes so far
+              </Badge>
+            </span>
           </CardHeader>
           <CardContent className="space-y-4">
             <Popover
@@ -224,7 +223,7 @@ export function HeroSection() {
                     onKeyDown={handleKeyDown}
                     onBlur={handleBlur}
                     placeholder="Enter address"
-                    className="h-12 text-base"
+                    className="h-12"
                     disabled={isNavigating}
                     autoComplete="off"
                   />
@@ -296,7 +295,7 @@ export function HeroSection() {
                       handleSubmit();
                     }
                   }}
-                  className="h-12 text-base"
+                  className="h-12"
                   placeholder="eg. 5B, 101"
                   disabled={isNavigating}
                 />

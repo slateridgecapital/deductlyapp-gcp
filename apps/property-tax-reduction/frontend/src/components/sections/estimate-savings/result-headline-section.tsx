@@ -57,15 +57,16 @@ export function ResultHeadlineSection({
       {hasSavings ? (
         <>
           <h1 className="mb-4 font-serif text-[28px] leading-tight tracking-[-1px] text-slate-900 lg:text-4xl">
-            You could save up to{" "}
+            You can save up to{" "}
             <span className="text-emerald-600">
               ${Math.round(estimatedSavings).toLocaleString('en-US')}
-            </span>{" "}
-            per year
+            </span>
+            <span className="inline text-slate-900 lg:hidden">/year</span>
+            <span className="hidden lg:inline"> per year</span>
           </h1>
           <p className="mx-auto max-w-xl text-base text-slate-600 lg:text-lg">
-            Based on our analysis, you may be overpaying due to an inflated
-            assessment. Here&apos;s what a correction could save you each year.
+            You may be overpaying due to an inflated assessment. Our experts
+            can help you save each year.
           </p>
         </>
       ) : (

@@ -229,7 +229,7 @@ export function AddressLookupCard({
                     }
                     onKeyDown={handleKeyDown}
                     onBlur={handleBlur}
-                    className="h-12 text-base"
+                    className="h-12"
                     placeholder="Enter address"
                     disabled={isLoading}
                     autoComplete="off"
@@ -304,7 +304,7 @@ export function AddressLookupCard({
                       handleSubmit();
                     }
                   }}
-                  className="h-12 text-base"
+                  className="h-12"
                   placeholder="eg. 5B, 101"
                   disabled={isLoading}
                 />

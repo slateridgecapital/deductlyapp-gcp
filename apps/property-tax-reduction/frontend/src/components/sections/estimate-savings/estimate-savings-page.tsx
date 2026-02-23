@@ -8,9 +8,6 @@ import { ValueComparisonSection } from "./value-comparison-section";
 import { AdjustInputsPanel } from "./adjust-inputs-panel";
 import { AddressLookupCard } from "./address-lookup-card";
 import { DiyAppealGuideSection } from "./diy-appeal-guide-section";
-import { FormulaBreakdownSection } from "./formula-breakdown-section";
-import { TrustDisclaimerSection } from "./trust-disclaimer-section";
-
 function buildFullAddress(baseAddress: string, unitNumber: string): string {
   const trimmed = baseAddress.trim();
   const unit = unitNumber.trim();
@@ -111,10 +108,10 @@ export function EstimateSavingsPage() {
   const [taxRatePercent, setTaxRatePercent] = useState(
     OUR_ESTIMATE.taxRatePercent
   );
-  const [resetKey, setResetKey] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [unitNumber, setUnitNumber] = useState("");
+  const [resetKey, setResetKey] = useState(0);
   const hasAutoLookedUpRef = useRef(false);
 
   const previousValuesRef = useRef<PreviousValues>({
@@ -180,7 +177,7 @@ export function EstimateSavingsPage() {
         setResetKey((k) => k + 1);
       }
     },
-    [address, assessedValue, marketValue, taxRatePercent, progress]
+    [address, assessedValue, marketValue, taxRatePercent, progress, setResetKey]
   );
 
   useEffect(() => {
@@ -243,7 +240,6 @@ export function EstimateSavingsPage() {
     setAssessedValue(lastLookup.assessedValue);
     setMarketValue(lastLookup.marketValue);
     setTaxRatePercent(lastLookup.taxRatePercent);
-    setResetKey((k) => k + 1);
   };
 
   const handleResetToEstimate = () => {
@@ -251,7 +247,6 @@ export function EstimateSavingsPage() {
     setAssessedValue(OUR_ESTIMATE.assessedValue);
     setMarketValue(OUR_ESTIMATE.marketValue);
     setTaxRatePercent(OUR_ESTIMATE.taxRatePercent);
-    setResetKey((k) => k + 1);
   };
 
   return (
@@ -271,6 +266,7 @@ export function EstimateSavingsPage() {
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-6">
           <AddressLookupCard
+            key={resetKey}
             address={address}
             initialApt={searchParams.get("apt") || unitNumber}
             isLoading={isLoading}
@@ -278,7 +274,6 @@ export function EstimateSavingsPage() {
             error={error}
           />
           <AdjustInputsPanel
-            key={resetKey}
             assessedValue={assessedValue}
             marketValue={marketValue}
             taxRatePercent={taxRatePercent}
@@ -308,17 +303,6 @@ export function EstimateSavingsPage() {
         taxRatePercent={taxRatePercent}
         estimatedSavings={estimatedSavings}
       />
-
-      <FormulaBreakdownSection
-        assessedValue={assessedValue}
-        marketValue={marketValue}
-        taxRatePercent={taxRatePercent}
-        assessedTaxes={assessedTaxes}
-        marketTaxes={marketTaxes}
-        estimatedSavings={estimatedSavings}
-        isLoading={isLoading}
-      />
-      <TrustDisclaimerSection />
     </div>
   );
 }

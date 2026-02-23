@@ -1,6 +1,6 @@
-import { TrendingDown, MapPin, LineChart, Calculator, ClipboardCheck } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import Image from "next/image";
+import { MapPin, LineChart, Calculator, ClipboardCheck } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 const processSteps = [
@@ -53,13 +53,7 @@ export function AssessmentGapSection() {
       <div className="container mx-auto max-w-6xl">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left Column - Content */}
-          <div className="flex flex-col justify-center">
-            {/* Badge */}
-            <Badge className="mb-6 w-fit bg-slate-800 text-white hover:bg-slate-800">
-              <TrendingDown className="mr-1.5 h-3 w-3" />
-              Property Tax Savings Estimate
-            </Badge>
-
+          <div className="flex flex-col justify-center order-2 lg:order-1">
             {/* Title */}
             <h2 className="mb-4 text-[30px] font-bold text-slate-900 lg:text-4xl">
               How This Works
@@ -102,14 +96,28 @@ export function AssessmentGapSection() {
           </div>
 
           {/* Right Column - Comparison Card */}
-          <div className="flex items-center">
-            <Card className="w-full shadow-lg py-4 gap-4">
-              <CardHeader>
-                <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
-                  <ClipboardCheck className="h-4 w-4" />
+          <div className="flex items-center order-1 lg:order-2">
+            <Card className="w-full shadow-lg py-4 gap-4 overflow-hidden">
+              <div className="relative -mt-4 aspect-[5/2] w-full">
+                <Image
+                  src="/images/house2.jpg"
+                  alt="Residential property"
+                  fill
+                  className="object-cover object-[center_20%]"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
+                />
+                <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-emerald-50/95 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-sm backdrop-blur-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Example
+                </span>
+              </div>
+              <div className="px-6 mt-1">
+                <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  <ClipboardCheck className="h-3.5 w-3.5" />
                   Valuation Comparison
                 </span>
-              </CardHeader>
+              </div>
               <CardContent className="space-y-6">
                 {/* County Assessment */}
                 <div className="space-y-2">
@@ -139,11 +147,11 @@ export function AssessmentGapSection() {
                 </div>
 
                 {/* Tax Breakdown */}
-                <div className="border-t border-slate-200 pt-4 mt-2">
+                <div className="border-t border-slate-200 pt-4 mt-2 space-y-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-600">Taxes at Assessed Value</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500 italic hidden lg:inline">
+                      <span className="text-xs text-slate-500 italic hidden md:inline">
                         ${countyAssessment.toLocaleString('en-US')} × {taxRatePercent}% =
                       </span>
                       <span className="font-semibold text-slate-900">
@@ -151,10 +159,10 @@ export function AssessmentGapSection() {
                       </span>
                     </div>
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-600">Taxes at Market Value</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500 italic hidden lg:inline">
+                      <span className="text-xs text-slate-500 italic hidden md:inline">
                         ${marketValue.toLocaleString('en-US')} × {taxRatePercent}% =
                       </span>
                       <span className="font-semibold text-slate-900">
@@ -162,19 +170,19 @@ export function AssessmentGapSection() {
                       </span>
                     </div>
                   </div>
-                  <div className="mt-3 flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Estimated Annual Savings</span>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-600"><span className="md:hidden">Estimated Savings</span><span className="hidden md:inline">Estimated Annual Savings</span></span>
                     <span className="font-semibold text-slate-900">
-                      up to <span className="text-emerald-600">${Math.round(estimatedSavings).toLocaleString('en-US')} <span className="lg:hidden">/ yr</span><span className="hidden lg:inline">/ year</span></span>
+                      up to <span className="text-emerald-600">${Math.round(estimatedSavings).toLocaleString('en-US')} <span className="lg:hidden text-slate-900">/ yr</span><span className="hidden lg:inline text-slate-900">/ year</span></span>
                     </span>
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Estimated Savings Percentage</span>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-600"><span className="md:hidden">Estimated Savings %</span><span className="hidden md:inline">Estimated Savings Percentage</span></span>
                     <span className="font-semibold text-slate-900">
                       up to <span className="text-emerald-600">{((estimatedSavings / assessedTaxes) * 100).toFixed(1)}%</span>
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 mt-3 italic">
+                  <p className="text-xs text-slate-500 italic">
                     Based on Austin, TX property tax rate ({taxRatePercent}%)
                   </p>
                 </div>

@@ -99,6 +99,215 @@ const STEPS = [
   },
 ];
 
+interface LetUsTakeItFormProps {
+  name: string;
+  setName: (v: string) => void;
+  email: string;
+  setEmail: (v: string) => void;
+  zipCode: string;
+  setZipCode: (v: string) => void;
+  error: string | null;
+  setError: (v: string | null) => void;
+  isSubmitting: boolean;
+  setIsSubmitting: (v: boolean) => void;
+  isSuccess: boolean;
+  setIsSuccess: (v: boolean) => void;
+  assessedValue: number;
+  marketValue: number;
+  taxRatePercent: number;
+  estimatedSavings: number;
+  idSuffix: string;
+}
+
+function LetUsTakeItForm({
+  name,
+  setName,
+  email,
+  setEmail,
+  zipCode,
+  setZipCode,
+  error,
+  setError,
+  isSubmitting,
+  setIsSubmitting,
+  isSuccess,
+  setIsSuccess,
+  assessedValue,
+  marketValue,
+  taxRatePercent,
+  estimatedSavings,
+  idSuffix,
+}: LetUsTakeItFormProps) {
+  return (
+    <div className="rounded-sm border border-slate-200 bg-white p-6 lg:sticky lg:top-20">
+      <div>
+        <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+          <ClipboardCheck className="h-4 w-4" />
+          Let Us Take it From Here
+        </h3>
+        <p className="mt-1 text-sm text-slate-600">
+          We will handle the entire process, no obligation, no pressure.
+        </p>
+      </div>
+
+      {isSuccess ? (
+        <div className="mt-5 flex items-start gap-3 rounded-sm border border-emerald-200 bg-emerald-50 p-4">
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+          <div>
+            <p className="font-medium text-emerald-900">
+              We&apos;ve got your info.
+            </p>
+            <p className="mt-1 text-sm text-emerald-700">
+              We&apos;ll reach out shortly with a personalized plan. No
+              filings or commitments until you&apos;re ready.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setError(null);
+
+            const trimmedZip = zipCode.trim();
+            const trimmedName = name.trim();
+            const trimmedEmail = email.trim();
+
+            if (!ZIP_REGEX.test(trimmedZip)) {
+              setError("Please enter a valid 5-digit zip code.");
+              return;
+            }
+            if (!trimmedName) {
+              setError("Please enter your name.");
+              return;
+            }
+            if (!EMAIL_REGEX.test(trimmedEmail)) {
+              setError("Please enter a valid email address.");
+              return;
+            }
+
+            setIsSubmitting(true);
+            try {
+              const res = await fetch("/api/submit-request", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  address: trimmedZip,
+                  name: trimmedName,
+                  email: trimmedEmail,
+                  assessedValue,
+                  marketValue,
+                  taxRatePercent,
+                  estimatedSavings,
+                }),
+              });
+
+              const json = await res.json();
+              if (!res.ok) {
+                setError(
+                  json?.error?.message ??
+                    "Something went wrong. Please try again."
+                );
+                setIsSubmitting(false);
+                return;
+              }
+
+              setIsSuccess(true);
+            } catch {
+              setError("Something went wrong. Please try again.");
+              setIsSubmitting(false);
+            }
+          }}
+          className="mt-5 space-y-4"
+        >
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor={`diy-name${idSuffix}`} className="text-sm">
+                Full Name
+              </Label>
+              <Input
+                id={`diy-name${idSuffix}`}
+                type="text"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setError(null);
+                }}
+                placeholder="Your full name"
+                required
+                className="h-10"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor={`diy-email${idSuffix}`} className="text-sm">
+                Email
+              </Label>
+              <Input
+                id={`diy-email${idSuffix}`}
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError(null);
+                }}
+                placeholder="you@gmail.com"
+                required
+                className="h-10"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor={`diy-zip${idSuffix}`} className="text-sm">
+                Zip Code
+              </Label>
+              <Input
+                id={`diy-zip${idSuffix}`}
+                type="text"
+                inputMode="numeric"
+                maxLength={5}
+                value={zipCode}
+                onChange={(e) => {
+                  setZipCode(e.target.value.replace(/\D/g, ""));
+                  setError(null);
+                }}
+                placeholder="94105"
+                required
+                className="h-10"
+              />
+            </div>
+          </div>
+
+          {error && (
+            <p className="text-sm text-red-600">{error}</p>
+          )}
+
+          <div className="space-y-2">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-12 w-full text-base cursor-pointer"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <ClipboardCheck className="mr-2 h-4 w-4" />
+                  Get a personalized plan
+                </>
+              )}
+            </Button>
+            <p className="text-center text-xs text-slate-500">
+              No upfront cost. No obligation.
+            </p>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
 export function DiyAppealGuideSection({
   assessedValue,
   marketValue,
@@ -114,213 +323,91 @@ export function DiyAppealGuideSection({
   return (
     <section className="mb-8">
       <Card className="gap-3 bg-slate-50/80 shadow-sm rounded-sm border-slate-200">
-        <CardHeader className="gap-1">
-          <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
-            <ListChecks className="h-4 w-4" />
-            Next Steps: The Appeal Process
-          </span>
-          <span className="text-sm text-slate-600">
-            Up to 30 hours of research, paperwork, and hearings.
-          </span>
-        </CardHeader>
-        <CardContent className="space-y-0">
-          <div className="divide-y divide-slate-200">
-            {STEPS.map((step) => (
-              <details key={step.id} className="group">
-                <summary className="flex cursor-pointer list-none items-center gap-3 py-4 text-sm [&::-webkit-details-marker]:hidden">
-                  <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700">
-                    {step.id}
-                  </span>
-                  <span className="flex-1 font-medium text-slate-800">
-                    {step.title}
-                  </span>
-                  <ChevronDown className="h-4 w-4 shrink-0 text-slate-500 transition-transform group-open:rotate-180" />
-                </summary>
-                <div className="pb-4 pl-10">
-                  <p className="text-sm text-slate-600">{step.generic}</p>
-                  {step.sfExample && (
-                    <div className="mt-3 rounded bg-slate-100 p-3">
-                      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        SF Example
-                      </p>
-                      <p className="text-sm text-slate-700">
-                        {step.sfExample}
-                      </p>
+        <div className="lg:flex">
+          <div className="flex flex-col gap-3 lg:flex-1 lg:min-w-0">
+            <CardHeader className="gap-1">
+              <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                <ListChecks className="h-4 w-4" />
+                Next Steps: The Appeal Process
+              </span>
+            </CardHeader>
+            <CardContent className="space-y-0">
+              <div className="divide-y divide-slate-200">
+                {STEPS.map((step) => (
+                  <details key={step.id} className="group" open={step.id === 1}>
+                    <summary className="flex cursor-pointer list-none items-center gap-3 py-2 text-sm [&::-webkit-details-marker]:hidden">
+                      <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700">
+                        {step.id}
+                      </span>
+                      <span className="flex-1 font-medium text-slate-800">
+                        {step.title}
+                      </span>
+                      <ChevronDown className="h-4 w-4 shrink-0 text-slate-500 transition-transform group-open:rotate-180" />
+                    </summary>
+                    <div className="pb-4">
+                      <p className="text-sm text-slate-600">{step.generic}</p>
+                      {step.sfExample && (
+                        <div className="mt-3 rounded bg-slate-100 p-3">
+                          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Example
+                          </p>
+                          <p className="text-sm text-slate-700">
+                            {step.sfExample}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </details>
-            ))}
-          </div>
-
-          <div className="mt-8 rounded-sm border border-slate-200 bg-white p-6">
-            <div>
-              <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
-                <ClipboardCheck className="h-4 w-4" />
-                Let Us Take it From Here
-              </h3>
-              <p className="mt-1 text-sm text-slate-600">
-                Our experts handle the entire process, no obligation, no pressure.
-              </p>
-            </div>
-
-            {isSuccess ? (
-              <div className="mt-5 flex items-start gap-3 rounded-sm border border-emerald-200 bg-emerald-50 p-4">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
-                <div>
-                  <p className="font-medium text-emerald-900">
-                    We&apos;ve got your info.
-                  </p>
-                  <p className="mt-1 text-sm text-emerald-700">
-                    We&apos;ll reach out shortly with a personalized plan. No
-                    filings or commitments until you&apos;re ready.
-                  </p>
-                </div>
+                  </details>
+                ))}
               </div>
-            ) : (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  setError(null);
-
-                  const trimmedZip = zipCode.trim();
-                  const trimmedName = name.trim();
-                  const trimmedEmail = email.trim();
-
-                  if (!ZIP_REGEX.test(trimmedZip)) {
-                    setError("Please enter a valid 5-digit zip code.");
-                    return;
-                  }
-                  if (!trimmedName) {
-                    setError("Please enter your name.");
-                    return;
-                  }
-                  if (!EMAIL_REGEX.test(trimmedEmail)) {
-                    setError("Please enter a valid email address.");
-                    return;
-                  }
-
-                  setIsSubmitting(true);
-                  try {
-                    const res = await fetch("/api/submit-request", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        address: trimmedZip,
-                        name: trimmedName,
-                        email: trimmedEmail,
-                        assessedValue,
-                        marketValue,
-                        taxRatePercent,
-                        estimatedSavings,
-                      }),
-                    });
-
-                    const json = await res.json();
-                    if (!res.ok) {
-                      setError(
-                        json?.error?.message ??
-                          "Something went wrong. Please try again."
-                      );
-                      setIsSubmitting(false);
-                      return;
-                    }
-
-                    setIsSuccess(true);
-                  } catch {
-                    setError("Something went wrong. Please try again.");
-                    setIsSubmitting(false);
-                  }
-                }}
-                className="mt-5 space-y-4"
-              >
-                <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="diy-name" className="text-sm">
-                      Full Name
-                    </Label>
-                    <Input
-                      id="diy-name"
-                      type="text"
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        setError(null);
-                      }}
-                      placeholder="Your full name"
-                      required
-                      className="h-10"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="diy-email" className="text-sm">
-                      Email
-                    </Label>
-                    <Input
-                      id="diy-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        setError(null);
-                      }}
-                      placeholder="you@example.com"
-                      required
-                      className="h-10"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="diy-zip" className="text-sm">
-                      Zip Code
-                    </Label>
-                    <Input
-                      id="diy-zip"
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={5}
-                      value={zipCode}
-                      onChange={(e) => {
-                        setZipCode(e.target.value.replace(/\D/g, ""));
-                        setError(null);
-                      }}
-                      placeholder="90210"
-                      required
-                      className="h-10"
-                    />
-                  </div>
-                </div>
-
-                {error && (
-                  <p className="text-sm text-red-600">{error}</p>
-                )}
-
-                <div className="space-y-2">
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="h-12 w-full text-base cursor-pointer"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <ClipboardCheck className="mr-2 h-4 w-4" />
-                        Get a personalized plan
-                      </>
-                    )}
-                  </Button>
-                  <p className="text-center text-xs text-slate-500">
-                    No upfront cost. No obligation.
-                  </p>
-                </div>
-              </form>
-            )}
+            </CardContent>
           </div>
-        </CardContent>
+
+          <div className="hidden px-6 lg:block lg:w-[440px] lg:shrink-0 lg:border-l lg:border-slate-200 lg:py-0">
+            <LetUsTakeItForm
+              name={name}
+              setName={setName}
+              email={email}
+              setEmail={setEmail}
+              zipCode={zipCode}
+              setZipCode={setZipCode}
+              error={error}
+              setError={setError}
+              isSubmitting={isSubmitting}
+              setIsSubmitting={setIsSubmitting}
+              isSuccess={isSuccess}
+              setIsSuccess={setIsSuccess}
+              assessedValue={assessedValue}
+              marketValue={marketValue}
+              taxRatePercent={taxRatePercent}
+              estimatedSavings={estimatedSavings}
+              idSuffix="-lg"
+            />
+          </div>
+        </div>
       </Card>
+
+      <div id="let-us-take-it-form" className="mt-6 lg:hidden">
+        <LetUsTakeItForm
+          name={name}
+          setName={setName}
+          email={email}
+          setEmail={setEmail}
+          zipCode={zipCode}
+          setZipCode={setZipCode}
+          error={error}
+          setError={setError}
+          isSubmitting={isSubmitting}
+          setIsSubmitting={setIsSubmitting}
+          isSuccess={isSuccess}
+          setIsSuccess={setIsSuccess}
+          assessedValue={assessedValue}
+          marketValue={marketValue}
+          taxRatePercent={taxRatePercent}
+          estimatedSavings={estimatedSavings}
+          idSuffix=""
+        />
+      </div>
     </section>
   );
 }
