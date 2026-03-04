@@ -22,8 +22,11 @@ const processSteps = [
     number: 3,
     icon: Calculator,
     title: "Estimate savings",
-    description:
-      "If market value is lower, we estimate what a reduced assessment could mean for your annual tax bill.",
+    description: (
+      <>
+        If the market value is <span className="underline">lower than the current assessed value</span>, we estimate what your savings could be
+      </>
+    ),
   },
   {
     number: 4,
@@ -115,7 +118,7 @@ export function AssessmentGapSection() {
               <div className="px-6 mt-1">
                 <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-600">
                   <ClipboardCheck className="h-3.5 w-3.5" />
-                  Valuation Comparison
+                  Savings Estimate
                 </span>
               </div>
               <CardContent className="space-y-6">

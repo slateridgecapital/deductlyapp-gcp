@@ -187,7 +187,7 @@ export function HeroSection() {
 
         {/* Subheadline */}
         <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-600">
-          Within seconds, we compare your tax assessment to today&apos;s market to see if you could lower your taxes.
+          Within 30 seconds, we compare your tax assessment to see if you could lower your taxes.
         </p>
 
         {/* Property Search Card */}
@@ -202,7 +202,7 @@ export function HeroSection() {
             <span className="hidden md:inline-flex" aria-hidden="true">
               <Badge variant="secondary" className="bg-emerald-50 text-emerald-700">
                 <CheckCircle className="mr-1 h-3 w-3" />
-                Saved $100k+ in taxes so far
+                Saved an average of $2,500 in taxes
               </Badge>
             </span>
           </CardHeader>
@@ -326,13 +326,12 @@ export function HeroSection() {
               )}
             </Button>
 
-            <p className="text-xs text-slate-500">
-              Or enter values{" "}
-              <Link href="/estimate" className="underline hover:text-slate-700">
-                manually
-              </Link>{" "}
-              to estimate savings
-            </p>
+            <Link
+              href="/estimate"
+              className="block text-xs text-slate-500 underline hover:text-slate-700"
+            >
+              or manually enter property details
+            </Link>
           </CardContent>
         </Card>
       </div>

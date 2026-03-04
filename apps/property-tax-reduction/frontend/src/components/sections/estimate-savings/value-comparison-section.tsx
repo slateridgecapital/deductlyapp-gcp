@@ -29,7 +29,7 @@ export function ValueComparisonSection({
           <CardHeader>
             <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
               <Calculator className="h-4 w-4" />
-              Valuation Comparison
+              Savings Estimate
             </span>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -81,7 +81,7 @@ export function ValueComparisonSection({
         <CardHeader>
           <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
             <Calculator className="h-4 w-4" />
-            Valuation Comparison
+            Savings Estimate
           </span>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -147,7 +147,7 @@ export function ValueComparisonSection({
             <div className="mt-2 flex items-center justify-between text-sm">
               <span className="text-slate-600"><span className="md:hidden">Estimated Savings %</span><span className="hidden md:inline">Estimated Savings Percentage</span></span>
               {Math.round(Math.max(0, assessedTaxes - marketTaxes)) === 0 ? (
-                <span className="font-semibold text-slate-900">—</span>
+                <span className="font-semibold text-slate-900">N/A</span>
               ) : (
                 <span className="font-semibold text-slate-900">
                   up to <span className="text-emerald-600">{((Math.max(0, assessedTaxes - marketTaxes) / assessedTaxes) * 100).toFixed(1)}%</span>
@@ -163,9 +163,9 @@ export function ValueComparisonSection({
                   .getElementById("let-us-take-it-form")
                   ?.scrollIntoView({ behavior: "smooth", block: "start" })
               }
-              className="text-sm text-slate-600 transition-colors hover:text-slate-900 cursor-pointer"
+              className="text-sm text-slate-600 underline transition-colors hover:text-slate-900 cursor-pointer"
             >
-              Get a personalized plan
+              Get a free personalized plan
             </button>
           </div>
         </CardContent>

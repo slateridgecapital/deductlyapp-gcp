@@ -108,8 +108,14 @@ interface LetUsTakeItFormProps {
   setEmail: (v: string) => void;
   zipCode: string;
   setZipCode: (v: string) => void;
-  error: string | null;
-  setError: (v: string | null) => void;
+  nameError: string | null;
+  setNameError: (v: string | null) => void;
+  emailError: string | null;
+  setEmailError: (v: string | null) => void;
+  zipError: string | null;
+  setZipError: (v: string | null) => void;
+  submitError: string | null;
+  setSubmitError: (v: string | null) => void;
   isSubmitting: boolean;
   setIsSubmitting: (v: boolean) => void;
   isSuccess: boolean;
@@ -130,8 +136,14 @@ function LetUsTakeItForm({
   setEmail,
   zipCode,
   setZipCode,
-  error,
-  setError,
+  nameError,
+  setNameError,
+  emailError,
+  setEmailError,
+  zipError,
+  setZipError,
+  submitError,
+  setSubmitError,
   isSubmitting,
   setIsSubmitting,
   isSuccess,
@@ -152,45 +164,51 @@ function LetUsTakeItForm({
           Let Us Take it From Here
         </h3>
         <p className="mt-1 text-sm text-slate-600">
-          We will handle the entire process, no obligation, no pressure.
+          We will help you through the entire process, no obligation.
         </p>
       </div>
 
       {isSuccess ? (
         <div className="mt-5 flex items-start gap-3 rounded-sm border border-emerald-200 bg-emerald-50 p-4">
           <div>
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-700">
+            <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-emerald-700">
               <CheckCircle className="h-3 w-3 shrink-0 text-emerald-700" />
-              We&apos;ve got your info.
+              Submitted
             </p>
             <p className="mt-1 text-sm text-slate-600">
-              We&apos;ll reach out shortly with a personalized plan. No
-              filings or commitments until you&apos;re ready.
+              Our experts will reach out shortly with a free personalized
+              plan.
             </p>
           </div>
         </div>
       ) : (
         <form
+          noValidate
           onSubmit={async (e) => {
             e.preventDefault();
-            setError(null);
+            setNameError(null);
+            setEmailError(null);
+            setZipError(null);
+            setSubmitError(null);
 
             const trimmedZip = zipCode.trim();
             const trimmedName = name.trim();
             const trimmedEmail = email.trim();
 
-            if (!ZIP_REGEX.test(trimmedZip)) {
-              setError("Please enter a valid 5-digit zip code.");
-              return;
-            }
+            let hasError = false;
             if (!trimmedName) {
-              setError("Please enter your name.");
-              return;
+              setNameError("Please enter your name.");
+              hasError = true;
             }
             if (!EMAIL_REGEX.test(trimmedEmail)) {
-              setError("Please enter a valid email address.");
-              return;
+              setEmailError("Please enter a valid email address.");
+              hasError = true;
             }
+            if (!ZIP_REGEX.test(trimmedZip)) {
+              setZipError("Please enter a valid 5-digit zip code.");
+              hasError = true;
+            }
+            if (hasError) return;
 
             setIsSubmitting(true);
             try {
@@ -212,7 +230,7 @@ function LetUsTakeItForm({
 
               const json = await res.json();
               if (!res.ok) {
-                setError(
+                setSubmitError(
                   json?.error?.message ??
                     "Something went wrong. Please try again."
                 );
@@ -222,7 +240,7 @@ function LetUsTakeItForm({
 
               setIsSuccess(true);
             } catch {
-              setError("Something went wrong. Please try again.");
+              setSubmitError("Something went wrong. Please try again.");
               setIsSubmitting(false);
             }
           }}
@@ -239,12 +257,17 @@ function LetUsTakeItForm({
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
-                  setError(null);
+                  setNameError(null);
+                }}
+                onBlur={() => {
+                  if (!name.trim()) setNameError("Please enter your name.");
                 }}
                 placeholder="Your full name"
-                required
                 className="h-10"
               />
+              {nameError && (
+                <p className="text-sm text-red-600">{nameError}</p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor={`diy-email${idSuffix}`} className="text-sm">
@@ -252,16 +275,22 @@ function LetUsTakeItForm({
               </Label>
               <Input
                 id={`diy-email${idSuffix}`}
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setError(null);
+                  setEmailError(null);
+                }}
+                onBlur={() => {
+                  if (!EMAIL_REGEX.test(email.trim()))
+                    setEmailError("Please enter a valid email address.");
                 }}
                 placeholder="you@gmail.com"
-                required
                 className="h-10"
               />
+              {emailError && (
+                <p className="text-sm text-red-600">{emailError}</p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor={`diy-zip${idSuffix}`} className="text-sm">
@@ -275,17 +304,23 @@ function LetUsTakeItForm({
                 value={zipCode}
                 onChange={(e) => {
                   setZipCode(e.target.value.replace(/\D/g, ""));
-                  setError(null);
+                  setZipError(null);
+                }}
+                onBlur={() => {
+                  if (!ZIP_REGEX.test(zipCode.trim()))
+                    setZipError("Please enter a valid 5-digit zip code.");
                 }}
                 placeholder="94105"
-                required
                 className="h-10"
               />
+              {zipError && (
+                <p className="text-sm text-red-600">{zipError}</p>
+              )}
             </div>
           </div>
 
-          {error && (
-            <p className="text-sm text-red-600">{error}</p>
+          {submitError && (
+            <p className="text-sm text-red-600">{submitError}</p>
           )}
 
           <div className="space-y-2">
@@ -302,7 +337,7 @@ function LetUsTakeItForm({
               ) : (
                 <>
                   <ClipboardCheck className="mr-2 h-4 w-4" />
-                  Get a personalized plan
+                  Get a free personalized plan
                 </>
               )}
             </Button>
@@ -328,7 +363,10 @@ export function DiyAppealGuideSection({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [zipError, setZipError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   return (
     <section className="mb-8">
@@ -381,8 +419,14 @@ export function DiyAppealGuideSection({
               setEmail={setEmail}
               zipCode={zipCode}
               setZipCode={setZipCode}
-              error={error}
-              setError={setError}
+              nameError={nameError}
+              setNameError={setNameError}
+              emailError={emailError}
+              setEmailError={setEmailError}
+              zipError={zipError}
+              setZipError={setZipError}
+              submitError={submitError}
+              setSubmitError={setSubmitError}
               isSubmitting={isSubmitting}
               setIsSubmitting={setIsSubmitting}
               isSuccess={isSuccess}
@@ -407,19 +451,25 @@ export function DiyAppealGuideSection({
           setEmail={setEmail}
           zipCode={zipCode}
           setZipCode={setZipCode}
-          error={error}
-          setError={setError}
+          nameError={nameError}
+          setNameError={setNameError}
+          emailError={emailError}
+          setEmailError={setEmailError}
+          zipError={zipError}
+          setZipError={setZipError}
+          submitError={submitError}
+          setSubmitError={setSubmitError}
           isSubmitting={isSubmitting}
           setIsSubmitting={setIsSubmitting}
           isSuccess={isSuccess}
           setIsSuccess={setIsSuccess}
-              assessedValue={assessedValue}
-              marketValue={marketValue}
-              taxRatePercent={taxRatePercent}
-              estimatedSavings={estimatedSavings}
-              address={address}
-              unitNumber={unitNumber}
-              idSuffix=""
+          assessedValue={assessedValue}
+          marketValue={marketValue}
+          taxRatePercent={taxRatePercent}
+          estimatedSavings={estimatedSavings}
+          address={address}
+          unitNumber={unitNumber}
+          idSuffix=""
         />
       </div>
     </section>

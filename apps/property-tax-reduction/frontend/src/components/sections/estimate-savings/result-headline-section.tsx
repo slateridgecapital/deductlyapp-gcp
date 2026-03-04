@@ -65,14 +65,14 @@ export function ResultHeadlineSection({
             <span className="hidden lg:inline"> per year</span>
           </h1>
           <p className="mx-auto max-w-xl text-base text-slate-600 lg:text-lg">
-            You may be overpaying due to an inflated assessment. Our experts
-            can help you save each year.
+            You may be overpaying on property taxes because your assessed value
+            is too high. Our experts can help you save.
           </p>
         </>
       ) : (
         <>
           <h1 className="mb-4 font-serif text-3xl leading-tight tracking-[-1px] text-slate-900 md:text-4xl">
-            Your assessment looks in line
+            No savings found based on our data
           </h1>
           <p className="mx-auto max-w-xl text-base text-slate-600 lg:text-lg">
             Your assessment appears to be in line with or below current market
