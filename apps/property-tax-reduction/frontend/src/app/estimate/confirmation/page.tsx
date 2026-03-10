@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
 
 export default function ConfirmationPage() {
   return (
@@ -23,10 +26,10 @@ export default function ConfirmationPage() {
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Button asChild variant="default">
-                <Link href="/estimate">Back to estimate</Link>
+                <Link href="/estimate" onClick={() => trackEvent("confirmation_back_click")}>Back to estimate</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/">Return home</Link>
+                <Link href="/" onClick={() => trackEvent("confirmation_home_click")}>Return home</Link>
               </Button>
             </div>
           </div>

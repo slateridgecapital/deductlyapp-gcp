@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { TrendingDown } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 export function Header() {
   const pathname = usePathname();
 
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    trackEvent("nav_logo_click", { page: pathname });
     if (pathname === "/") {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -14,13 +16,15 @@ export function Header() {
   };
 
   const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    trackEvent("nav_link_click", { label: "Home", page: pathname });
     if (pathname === "/") {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string, label: string) => {
+    trackEvent("nav_link_click", { label, page: pathname });
     if (pathname === "/") {
       e.preventDefault();
       const element = document.getElementById(targetId);
@@ -57,21 +61,21 @@ export function Header() {
           <a
             href="/#how-it-works"
             className="text-sm text-slate-600 transition-colors hover:text-slate-900"
-            onClick={(e) => handleSmoothScroll(e, "how-it-works")}
+            onClick={(e) => handleSmoothScroll(e, "how-it-works", "How This Works")}
           >
             How This Works
           </a>
           <a
             href="/#testimonials"
             className="text-sm text-slate-600 transition-colors hover:text-slate-900"
-            onClick={(e) => handleSmoothScroll(e, "testimonials")}
+            onClick={(e) => handleSmoothScroll(e, "testimonials", "Testimonials")}
           >
             Testimonials
           </a>
           <a
             href="/#about"
             className="text-sm text-slate-600 transition-colors hover:text-slate-900"
-            onClick={(e) => handleSmoothScroll(e, "about")}
+            onClick={(e) => handleSmoothScroll(e, "about", "About")}
           >
             About
           </a>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useAddressAutocomplete } from "@/hooks/use-address-autocomplete";
+import { trackEvent } from "@/lib/analytics";
 
 export function HeroSection() {
   const router = useRouter();
@@ -72,6 +73,7 @@ export function HeroSection() {
       setHighlightedIndex(-1);
       setUnitError(false);
       inputRef.current?.blur();
+      trackEvent("address_selected", { source: "hero" });
     },
     [selectSuggestion, clearSuggestions, resetSessionToken]
   );
@@ -130,6 +132,7 @@ export function HeroSection() {
 
     const addressToUse = selectedFromAutocomplete ? cleanAddress : trimmed;
 
+    trackEvent("estimate_savings_click", { source: "hero", has_address: !!addressToUse });
     setIsNavigating(true);
     const params = new URLSearchParams();
     params.set("address", addressToUse);
@@ -329,6 +332,7 @@ export function HeroSection() {
             <Link
               href="/estimate"
               className="block text-xs text-slate-500 underline hover:text-slate-700"
+              onClick={() => trackEvent("manual_entry_click")}
             >
               or manually enter property details
             </Link>

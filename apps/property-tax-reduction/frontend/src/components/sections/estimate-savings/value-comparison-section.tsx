@@ -4,6 +4,7 @@ import { Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { trackEvent } from "@/lib/analytics";
 
 interface ValueComparisonSectionProps {
   assessedValue: number;
@@ -158,11 +159,12 @@ export function ValueComparisonSection({
           <div className="mt-4 pt-4 border-t border-slate-200 lg:hidden flex justify-end">
             <button
               type="button"
-              onClick={() =>
+              onClick={() => {
+                trackEvent("cta_get_plan_click", { source: "comparison" });
                 document
                   .getElementById("let-us-take-it-form")
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
-              }
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
               className="text-sm text-slate-600 underline transition-colors hover:text-slate-900 cursor-pointer"
             >
               Get a free personalized plan

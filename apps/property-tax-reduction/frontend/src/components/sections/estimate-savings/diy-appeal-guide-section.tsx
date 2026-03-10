@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { trackEvent } from "@/lib/analytics";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ZIP_REGEX = /^\d{5}$/;
@@ -210,6 +211,7 @@ function LetUsTakeItForm({
             }
             if (hasError) return;
 
+            trackEvent("lead_form_submit");
             setIsSubmitting(true);
             try {
               const res = await fetch("/api/submit-request", {
@@ -230,16 +232,17 @@ function LetUsTakeItForm({
 
               const json = await res.json();
               if (!res.ok) {
-                setSubmitError(
-                  json?.error?.message ??
-                    "Something went wrong. Please try again."
-                );
+                const msg = json?.error?.message ?? "Something went wrong. Please try again.";
+                trackEvent("lead_form_error", { error: msg });
+                setSubmitError(msg);
                 setIsSubmitting(false);
                 return;
               }
 
+              trackEvent("lead_form_success");
               setIsSuccess(true);
             } catch {
+              trackEvent("lead_form_error", { error: "network_error" });
               setSubmitError("Something went wrong. Please try again.");
               setIsSubmitting(false);
             }
@@ -382,7 +385,16 @@ export function DiyAppealGuideSection({
             <CardContent className="space-y-0">
               <div className="divide-y divide-slate-200">
                 {STEPS.map((step) => (
-                  <details key={step.id} className="group" open={step.id === 1}>
+                  <details
+                    key={step.id}
+                    className="group"
+                    open={step.id === 1}
+                    onToggle={(e) => {
+                      if ((e.target as HTMLDetailsElement).open) {
+                        trackEvent("diy_step_opened", { step: step.id });
+                      }
+                    }}
+                  >
                     <summary className="flex cursor-pointer list-none items-center gap-3 py-2 text-sm [&::-webkit-details-marker]:hidden">
                       <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700">
                         {step.id}

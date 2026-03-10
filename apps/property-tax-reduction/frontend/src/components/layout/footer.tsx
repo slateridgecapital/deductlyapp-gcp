@@ -1,5 +1,8 @@
+"use client";
+
 import { TrendingDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { trackEvent } from "@/lib/analytics";
 
 export function Footer() {
   return (
@@ -19,18 +22,21 @@ export function Footer() {
             <a
               href="#privacy"
               className="text-sm text-primary-foreground transition-colors hover:opacity-90"
+              onClick={() => trackEvent("footer_link_click", { label: "Privacy Policy" })}
             >
               Privacy Policy
             </a>
             <a
-              href="#terms"
+              href="/terms"
               className="text-sm text-primary-foreground transition-colors hover:opacity-90"
+              onClick={() => trackEvent("footer_link_click", { label: "Terms of Use" })}
             >
               Terms of Use
             </a>
             <a
               href="#about"
               className="text-sm text-primary-foreground transition-colors hover:opacity-90"
+              onClick={() => trackEvent("footer_link_click", { label: "About" })}
             >
               About
             </a>

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { trackEvent } from "@/lib/analytics";
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 100_000_000;
@@ -148,16 +149,23 @@ export function AdjustInputsPanel({
   const handleTaxRateBlur = useCallback(() => {
     const num = parseFloat(taxRateInput.replace(/,/g, ""));
     if (!Number.isNaN(num) && num >= MIN_TAX_RATE && num <= MAX_TAX_RATE) {
-      // Format nicely when user is done typing
       const formatted = num % 1 === 0 ? String(num) : num.toFixed(2);
       setTaxRateInput(formatted);
     }
+    trackEvent("input_adjusted", { field: "tax_rate" });
   }, [taxRateInput]);
+
+  const handleToggleCollapse = () => {
+    const newCollapsed = !isCollapsed;
+    setIsCollapsed(newCollapsed);
+    trackEvent("adjust_inputs_toggle", { expanded: !newCollapsed });
+  };
 
   const handleResetToCounty = () => {
     setAssessedError(null);
     setMarketError(null);
     setTaxRateError(null);
+    trackEvent("reset_to_county");
     onResetToCounty();
   };
 
@@ -181,7 +189,7 @@ export function AdjustInputsPanel({
             </div>
             <button
               type="button"
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onClick={handleToggleCollapse}
               className="p-1 hover:bg-slate-100 rounded transition-colors"
               aria-label={isCollapsed ? "Expand adjust inputs" : "Collapse adjust inputs"}
             >
@@ -226,7 +234,7 @@ export function AdjustInputsPanel({
           </div>
           <button
             type="button"
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={handleToggleCollapse}
             className="p-1 hover:bg-slate-100 rounded transition-colors"
             aria-label={isCollapsed ? "Expand adjust inputs" : "Collapse adjust inputs"}
           >
@@ -250,6 +258,7 @@ export function AdjustInputsPanel({
                 inputMode="numeric"
                 value={assessedInput}
                 onChange={(e) => validateAndApplyAssessed(e.target.value)}
+                onBlur={() => trackEvent("input_adjusted", { field: "assessed_value" })}
                 className="h-11 pl-8"
                 placeholder="e.g. 1000000"
                 aria-invalid={!!assessedError}
@@ -272,6 +281,7 @@ export function AdjustInputsPanel({
                 inputMode="numeric"
                 value={marketInput}
                 onChange={(e) => validateAndApplyMarket(e.target.value)}
+                onBlur={() => trackEvent("input_adjusted", { field: "market_value" })}
                 className="h-11 pl-8"
                 placeholder="e.g. 750000"
                 aria-invalid={!!marketError}

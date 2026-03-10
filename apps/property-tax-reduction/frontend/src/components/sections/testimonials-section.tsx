@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel";
+import { trackEvent } from "@/lib/analytics";
 
 const testimonials = [
   {
@@ -111,8 +112,8 @@ export function TestimonialsSection() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious onClickCapture={() => trackEvent("testimonial_navigate", { direction: "previous" })} />
+            <CarouselNext onClickCapture={() => trackEvent("testimonial_navigate", { direction: "next" })} />
           </Carousel>
         </div>
       </div>

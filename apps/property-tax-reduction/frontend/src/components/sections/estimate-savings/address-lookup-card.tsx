@@ -12,6 +12,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { useAddressAutocomplete } from "@/hooks/use-address-autocomplete";
+import { trackEvent } from "@/lib/analytics";
 
 interface AddressLookupCardProps {
   address: string;
@@ -108,6 +109,7 @@ export function AddressLookupCard({
       setHighlightedIndex(-1);
       setUnitError(false);
       inputRef.current?.blur();
+      trackEvent("address_selected", { source: "estimate" });
     },
     [selectSuggestion, clearSuggestions, resetSessionToken]
   );
@@ -172,7 +174,7 @@ export function AddressLookupCard({
     setLastSubmittedBase(addressToUse);
     setLastSubmittedUnit(unitToUse);
     const fullAddress = buildFullAddress(addressToUse, unitToUse);
-    // Pass both: full address (with unit) for the API, base address for display
+    trackEvent("estimate_savings_click", { source: "estimate", has_address: !!addressToUse });
     onLookup(fullAddress, addressToUse);
   };
 
