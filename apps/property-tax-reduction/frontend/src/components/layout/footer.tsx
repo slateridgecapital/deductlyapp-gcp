@@ -20,7 +20,7 @@ export function Footer() {
           {/* Links */}
           <nav className="flex items-center gap-6">
             <a
-              href="#privacy"
+              href="/privacy"
               className="text-sm text-primary-foreground transition-colors hover:opacity-90"
               onClick={() => trackEvent("footer_link_click", { label: "Privacy Policy" })}
             >
@@ -43,9 +43,16 @@ export function Footer() {
           </nav>
 
           {/* Disclaimer */}
-          <p className="max-w-xs text-right text-xs text-primary-foreground">
-            © 2026 deductly.
-          </p>
+          <div className="flex flex-col items-end gap-1">
+            <p className="text-xs text-primary-foreground">© 2026 deductly</p>
+            <a
+              href="mailto:contact@deductly.com"
+              className="text-xs text-primary-foreground transition-colors hover:opacity-90"
+              onClick={() => trackEvent("footer_link_click", { label: "Contact" })}
+            >
+              contact@deductly.com
+            </a>
+          </div>
         </div>
       </div>
     </footer>

@@ -14,8 +14,8 @@ export default function TermsOfUsePage() {
             Terms of Use
           </h1>
           <p className="text-sm text-slate-500 mb-8">
-            <strong>Effective Date:</strong> [Date] &nbsp;|&nbsp;{" "}
-            <strong>Last Updated:</strong> [Date]
+            <strong>Effective Date:</strong> March 10, 2026 &nbsp;|&nbsp;{" "}
+            <strong>Last Updated:</strong> March 10, 2026
           </p>
 
           {/* 1. Acceptance of Terms */}
