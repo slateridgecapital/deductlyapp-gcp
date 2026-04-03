@@ -18,3 +18,11 @@ export function trackEvent(
     window.gtag("event", eventName, params);
   }
 }
+
+export function trackConversionSignup() {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "conversion_event_signup", {
+      event_timeout: 2000,
+    });
+  }
+}

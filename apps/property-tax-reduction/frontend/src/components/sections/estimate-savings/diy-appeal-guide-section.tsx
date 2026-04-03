@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { trackEvent } from "@/lib/analytics";
+import { trackConversionSignup, trackEvent } from "@/lib/analytics";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ZIP_REGEX = /^\d{5}$/;
@@ -240,6 +240,7 @@ function LetUsTakeItForm({
               }
 
               trackEvent("lead_form_success");
+              trackConversionSignup();
               setIsSuccess(true);
             } catch {
               trackEvent("lead_form_error", { error: "network_error" });
