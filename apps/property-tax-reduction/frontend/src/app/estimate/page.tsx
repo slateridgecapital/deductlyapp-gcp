@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { EstimateSavingsPage } from "@/components/sections/estimate-savings/estimate-savings-page";
+
+export const metadata: Metadata = {
+  title: "Estimate Your Property Tax Savings",
+  description:
+    "Enter your property address to instantly compare your tax assessment to market value. See how much you could save by appealing your property taxes.",
+  alternates: { canonical: "/estimate" },
+};
 
 export default function EstimatePage() {
   return (

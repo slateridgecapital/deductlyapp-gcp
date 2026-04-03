@@ -1,8 +1,16 @@
 // TODO: Replace "Slate Ridge Capital LLC" with actual legal entity name once formed
 // TODO: Replace "contact@deductly.com" with actual contact email once established
 
+import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "Learn how Deductly collects, uses, and protects your personal information when you use our property tax savings tools.",
+  alternates: { canonical: "/privacy" },
+};
 
 export default function PrivacyPolicyPage() {
   return (

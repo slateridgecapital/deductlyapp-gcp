@@ -14,8 +14,24 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "deductly | Property Tax Savings Estimate",
-  description: "Leverage institutional-grade valuation tools to identify property tax assessment discrepancies and reclaim overpayments.",
+  metadataBase: new URL("https://deductly.com"),
+  title: {
+    default: "Free Property Tax Savings Calculator | Deductly",
+    template: "%s | Deductly",
+  },
+  description:
+    "Are you overpaying property taxes? Compare your tax assessment to current market value in 30 seconds and estimate how much you could save on your property tax bill.",
+  openGraph: {
+    type: "website",
+    siteName: "Deductly",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({
@@ -38,6 +54,38 @@ export default function RootLayout({
             gtag('config', 'G-GWSD2NMQ3L');
           `}
         </Script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  name: "Deductly",
+                  url: "https://deductly.com",
+                  email: "contact@deductly.com",
+                  description:
+                    "Deductly helps homeowners identify property tax overpayments and estimate potential savings by comparing assessments to current market values.",
+                },
+                {
+                  "@type": "WebApplication",
+                  name: "Deductly Property Tax Savings Calculator",
+                  url: "https://deductly.com/estimate",
+                  applicationCategory: "FinanceApplication",
+                  operatingSystem: "All",
+                  offers: {
+                    "@type": "Offer",
+                    price: "0",
+                    priceCurrency: "USD",
+                  },
+                  description:
+                    "Free tool that compares your property tax assessment to current market value and estimates how much you could save by appealing.",
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
         {children}
